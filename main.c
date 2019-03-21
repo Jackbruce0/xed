@@ -52,12 +52,20 @@ int main(int argc, const char * argv[])
     /*********** STEP 1 ***********/
     /* File Check/Open */
     FILE* objptr = FileOpen(objfname, "rb");
-    //FILE* symptr = FileOpen(symfname, "rb");
+    FILE* symptr = FileOpen(symfname, "rb");
     
-    
-    //Read in first 16 chars and store in Header
-    
+    /* Read in first 16 chars and store in Header */
+    Header* H = GetHeader(objptr, objfname); 
+
+    fclose(objptr);
+    fclose(symptr);
     /******** END OF STEP 1 *******/
+    
+    //test//
+    printf("Program name: %s\n", H->name);
+    printf("Starting address: %06X\n", H->strtadr);
+    printf("Program length: %06X\n", H->prglen); //this is messed up?
+    ///////
     return 0;
 }
 

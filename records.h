@@ -16,15 +16,16 @@
 /***********************[ Record Types ]**********************/
 typedef struct Header
 {
-    char* name;
-    unsigned char startAddress[3];
-    unsigned char programLength[3];
+    char name[6]; //[1-6] (ASCII form)
+    unsigned int strtadr; //[7-12] (numeric form)
+    unsigned int prglen; //[13-18] (numeric form)
 }Header;
 
 typedef struct Text{
-    unsigned char startAddress[3];
-    int recLength;
-    unsigned char inst[30];
+    unsigned int strtadr;
+    unsigned int recLength;
+    unsigned char inst[30]; /* this will be tricky to large
+                             for numeric from */
 }Text;
 
 typedef struct Mod
@@ -40,9 +41,10 @@ typedef struct End
 }End;
 /******************[ End of Record Types ]********************/
 
-int filesExist(const char* filename);
+Header* GetHeader(FILE* objfile, char* objfname);
 
-void doStuff(void);
+int CharToNum(unsigned int dest, unsigned char input,
+               int pos, int size);
 
 #endif /* records_h */
 
