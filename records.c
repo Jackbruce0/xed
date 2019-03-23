@@ -11,7 +11,6 @@
 #include <math.h>
 #include "records.h"
 
-
 /*************************************************************
  function: CountRecords
  Notes: Reads obj code and counts number of text and mod
@@ -125,7 +124,7 @@ int CharToNum(unsigned int dest, unsigned char input,
     {
         charnum -= 48;
     }
-    else if (charnum >= 55 && charnum <= 70) // [A-F]
+    else if (charnum >= 65 && charnum <= 70) // [A-F]
     {
         charnum -= 55; // only takes care of A-F
     }
@@ -183,7 +182,6 @@ Text* GetText(FILE *objfile, char* objfname)
     }
     fgetc(objfile); /* Burn '\n' at the end of
                      Header record */
-    
     return tptr;
 } /* End function Get_Text */
 
@@ -198,7 +196,53 @@ Text* GetText(FILE *objfile, char* objfname)
 Mod *GetMod(FILE *objfile, char* objfname)
 {
     Mod *mptr = malloc(sizeof(Mod));
+    mptr->startadr = 0;
+    mptr->modLength = 0;
+    
+    int filenx = 0, adrnx = 0, lennx = 0;
+    unsigned char c;
+    while(filenx < 6) /*startadr*/
+    {
+        c = fgetc(objfile);
+        mptr->startadr = CharToNum(mptr->startadr, c,
+                                   adrnx++, 6);
+        filenx++;
+    }
+    while(filenx < 8)
+    {
+        c = fgetc(objfile);
+        mptr->modLength = CharToNum(mptr->modLength, c,
+                                    lennx++, 2);
+        filenx++;
+    }
+    fgetc(objfile); /* Burn '\n' at the end of
+                     Header record */
     return mptr;
-}
+} /* End function Get_Mod */
+
+/*************************************************************
+ function: GetEnd
+ Notes: Reads next line of obj file and interprets it as a
+    End record. Converts each char to numeric hex value
+    and stores each digit into the appropriate field.
+ I/O: input paramaters: Pointer to obj file and obj file name
+      output: pointer to populated End struct (record)
+ *************************************************************/
+End *GetEnd(FILE *objfile, char* objfname)
+{
+    End *eptr = malloc(sizeof(End));
+    eptr->firstinst = 0;
+    
+    int filenx = 0, adrnx = 0;
+    char c;
+    while(filenx < 6) /*firstinst*/
+    {
+        c = fgetc(objfile);
+        eptr->firstinst = CharToNum(eptr->firstinst, c,
+                                    adrnx++, 6);
+        filenx++;
+    }
+    return eptr;
+} /* End function Get_End */
 
 /*********************[ EOF: records.c ]**********************/

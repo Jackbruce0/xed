@@ -58,7 +58,7 @@ int main(int argc, const char * argv[])
     CountRecords(objfile);
     Text **T = malloc(GetTcount()*sizeof(Text*));
     Mod **M = malloc(GetMcount()*sizeof(Mod*));
-    Header* H = GetHeader(objfile, objfname);
+    Header *H = GetHeader(objfile, objfname);
     
     int textnx = 0, modnx = 0;
     char c;
@@ -66,27 +66,28 @@ int main(int argc, const char * argv[])
     {
         if(c == 'T')
         {
-            T[textnx] = GetText(objfile, objfname);
+            T[textnx++] = GetText(objfile, objfname);
         }
         else if(c == 'M')
         {
-            
+            M[modnx++] = GetMod(objfile, objfname);
         }
         else
         {
-//            fprintf(stderr, "Error in %s\n'%c' record is \
-//                    unkown\n", objfname, c);
-//            exit(1);
+            fprintf(stderr, "Error in %s\n'%c' record is \
+                    unkown\n", objfname, c);
+            exit(1);
         }
     }
+    End *E = GetEnd(objfile, objfname);
     
     fclose(objfile);
     fclose(symfile);
     /******** END OF STEP 1 *******/
     
     //test//
-    printf("T count: %d, M count: %d\n", GetTcount(),
-           GetMcount());
+    printf("T record count: %d, M record count: %d\n",
+           GetTcount(), GetMcount());
     printf("Program name: %s\n", H->name);
     printf("Starting address: %06X\n", H->startadr);
     printf("Program length: %06X\n\n", H->prglen);
@@ -99,7 +100,13 @@ int main(int argc, const char * argv[])
         printf("%02X ", T[0]->inst[i]);
         i++;
     }
-    printf("\n");
+    printf("\n\n");
+    printf("1st mod record start address: %06X\n",
+           M[0]->startadr);
+    printf("1st mod record length: %02X\n\n",
+           M[0]->modLength);
+    printf("Address of 1st executable instruction: %06X\n",
+           E->firstinst);
     ///////
     return 0;
 }

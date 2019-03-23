@@ -32,13 +32,13 @@ typedef struct Text
 typedef struct Mod
 {
     unsigned int startadr;
-    int modLength;//IN 1/2 Bytes
+    unsigned int modLength;//IN 1/2 Bytes
     //SYMBOL VALUE UNKNOWN(char*?)
 }Mod;
 
 typedef struct End
 {
-    unsigned char firstinst[3] ;//optional?
+    unsigned int firstinst ;//optional?
 }End;
 /******************[ End of Record Types ]********************/
 
@@ -56,6 +56,8 @@ int CharToNum(unsigned int dest, unsigned char input,
 Text *GetText(FILE *objfile, char *objfname);
 
 Mod *GetMod(FILE *objfile, char* objfname);
+
+End *GetEnd(FILE *objfile, char* objfname);
 
 #endif /* records_h */
 
