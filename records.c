@@ -4,7 +4,7 @@
  Project: CS530 Assignment 2
  File: records.c
  Notes: This file contains all methods to read, classify, and
- store object code into designated structs.
+    store object code into designated structs.
  *************************************************************/
 
 #include <stdlib.h>

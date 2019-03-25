@@ -4,12 +4,26 @@
  Project: CS530 Assignment 2
  File: main.c
  Notes: SIC XE Disassembler
+    SYNOPSIS:
+        xed <filename>
+            - filename will not include any extensions
+            - filename must contain path to directory that
+                contains <filename>.obj and <filename>.sym
+            - ex) xed ./test/sample
  *************************************************************/
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "records.h"
+
+/*************************************************************
+ I DON'T KNOW WHERE TO PUT THESE PROTOTYPES
+ (apprently main.h is a wierd thing to do)
+*************************************************************/
+FILE *FileOpen(char *fileName, char *mode);
+char *GetFileExt(char *baseName, char *ext);
+/* End of main.c prototypes */
 
 /*************************************************************
  function: FileOpen
