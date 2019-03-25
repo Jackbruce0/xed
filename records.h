@@ -2,7 +2,7 @@
  Names: Jack Bruce & Jacob Romio
  usernames: cssc0420 & cssc0413
  Project: CS530 Assignment 2
- File: recordsa.h
+ File: records.h
  Notes: Contains struct definitions for each record type and
     prototypes for methods dealing with reading obj code and
     organizing inside of structs.
@@ -25,8 +25,7 @@ typedef struct Text
 {
     unsigned int startadr;
     unsigned int reclength;
-    unsigned char inst[30]; /* this will be tricky too large
-                             for numeric from */
+    unsigned char inst[30];
 }Text;
 
 typedef struct Mod
