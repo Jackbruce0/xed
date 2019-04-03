@@ -102,6 +102,7 @@ Header* GetHeader(FILE *objfile, char* objfname)
     }
     fgetc(objfile); /* Burn '\n' at the end of
                      Header record */
+	fgetc(objfile);//needed to add a second one to work(Jake)
     return hptr;
 } /* End function Get_Header */
 
@@ -181,7 +182,8 @@ Text* GetText(FILE *objfile, char* objfname)
         instnx++;
     }
     fgetc(objfile); /* Burn '\n' at the end of
-                     Header record */
+                     Text record */
+	fgetc(objfile);
     return tptr;
 } /* End function Get_Text */
 
@@ -216,7 +218,8 @@ Mod *GetMod(FILE *objfile, char* objfname)
         filenx++;
     }
     fgetc(objfile); /* Burn '\n' at the end of
-                     Header record */
+                     Mod record */
+	fgetc(objfile);
     return mptr;
 } /* End function Get_Mod */
 

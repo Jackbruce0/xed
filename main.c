@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "records.h"
+#include "instruction.h"
 
 /*************************************************************
  I DON'T KNOW WHERE TO PUT THESE PROTOTYPES
@@ -58,6 +59,32 @@ char *GetFileExt(char *baseName, char *ext)
     return fileName;
 } /* End function Get_File_Ext */
 
+/*************************************************************
+ function: FreeMem
+ Notes: Frees memory reserved by malloc.
+ I/O: input paramaters: each pointer for malloc calls
+      output: none
+ *************************************************************/
+void FreeMem(char* objfname, char* symfname,
+				Header* H, Text** T, Mod** M, End* E)
+{
+    free(objfname);
+	free(symfname);
+	int i;
+	for(i=0; i<GetTcount(); i++)
+	{
+		free(T[i]);
+	}
+	for(i=0; i<GetMcount(); i++)
+	{
+		free(M[i]);
+	}
+	free(T);
+	free(M);
+	free(H);
+	free(E);
+} /* End function FreeMem */
+
 int main(int argc, const char * argv[])
 {
     char *fname = (char*)argv[1];
@@ -78,7 +105,7 @@ int main(int argc, const char * argv[])
     char c;
     while((c=fgetc(objfile)) != 'E')
     {
-        if(c == 'T')
+		if(c == 'T')
         {
             T[textnx++] = GetText(objfile, objfname);
         }
@@ -89,7 +116,7 @@ int main(int argc, const char * argv[])
         else
         {
             fprintf(stderr, "Error in %s\n'%c' record is \
-                    unkown\n", objfname, c);
+                    unknown\n", objfname, c);
             exit(1);
         }
     }
@@ -98,6 +125,13 @@ int main(int argc, const char * argv[])
     fclose(objfile);
     fclose(symfile);
     /******** END OF STEP 1 *******/
+	
+	/*********** STEP 2 ***********/
+	for(textnx=0; textnx<GetTcount(); textnx++)
+	{
+		formatCall(T[textnx]->reclength, T[textnx]->inst);
+	}
+	/******** END OF STEP 2 *******/
     
     //test//
     printf("T record count: %d, M record count: %d\n",
@@ -122,6 +156,7 @@ int main(int argc, const char * argv[])
     printf("Address of 1st executable instruction: %06X\n",
            E->firstinst);
     ///////
+	FreeMem(objfname, symfname, H, T, M, E);
     return 0;
 }
 

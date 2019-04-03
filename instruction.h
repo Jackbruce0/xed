@@ -34,10 +34,17 @@ typedef struct Instruction
                       if (indirect) [0] = '&'
                       if (literal) [0] = '='
                       else [0] = ' ' */
-    unsigned char opjcode[4]; /* Col 5
+    unsigned char objcode[4]; /* Col 5
                                raw obj code for each line */
 } Instruction;
+/******************[ End of Instruction type ]********************/
 
+//function prototypes here
+void formatCall(unsigned int recLength, unsigned char inst[30]);
+int bit(unsigned char curByte, int NX);
+unsigned char asciiToHex(unsigned char c1, unsigned char c2);
+unsigned char byteToHalfByte(unsigned char curByte, int NX);
+void binaryPrint(unsigned char curByte);
 #endif /* instruction_h */
 
 /*******************[ EOF: instruction.h ]********************/
