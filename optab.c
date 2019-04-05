@@ -3,17 +3,25 @@
  usernames: cssc0420 & cssc0413
  Project: CS530 Assignment 2
  File: optab.c
- Notes: There will probably be methods associated with
-    printing in here.
-    TBA
+ Notes: OPTAB containing all of the mnemonics, as well as a
+		function to determine what format it is.
  *************************************************************/
 #include <stdlib.h>
 #include "optab.h"
 
-int sicInstCheck(unsigned char curByte){
-	unsigned char opCode=curByte>>2;
-	opCode<<=2;
-	switch(opCode)
+/*************************************************************
+ function: SicInstCheck
+ Notes: Sends an integer back to indicate the format the
+		instruction is.
+ I/O: input paramaters: The first byte of the Text record
+						data being read.
+      output: An integer to indicate format.
+ *************************************************************/
+ 
+int SicInstCheck(unsigned char curbyte){
+	unsigned char opcode=curbyte>>2;
+	opcode<<=2;
+	switch(opcode)
 	{
 		//Format 1 Check
 		case 0xC4:
@@ -59,10 +67,19 @@ int sicInstCheck(unsigned char curByte){
 	}
 }
 
-char* sicInstMnemonic(unsigned char curByte){
-	unsigned char opCode=curByte>>2;
-	opCode<<=2;
-	switch(opCode)
+/*************************************************************
+ function: SicInstMnemonic
+ Notes: Given the opcode from Text Record data, returns
+		the mnemonic.
+ I/O: input paramaters: The first byte of the Text record
+						data being read.
+      output: char* of mnemonic found.
+ *************************************************************/
+ 
+char* SicInstMnemonic(unsigned char curbyte){
+	unsigned char opcode=curbyte>>2;
+	opcode<<=2;
+	switch(opcode)
 	{
 		//Format 1 Check
 		case 0xC4:

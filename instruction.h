@@ -37,14 +37,33 @@ typedef struct Instruction
     unsigned char objcode[4]; /* Col 5
                                raw obj code for each line */
 } Instruction;
-/******************[ End of Instruction type ]********************/
 
-//function prototypes here
-void formatCall(unsigned int recLength, unsigned char inst[30]);
-int bit(unsigned char curByte, int NX);
-unsigned char asciiToHex(unsigned char c1, unsigned char c2);
-unsigned char byteToHalfByte(unsigned char curByte, int NX);
-void binaryPrint(unsigned char curByte);
+typedef struct node* link;
+
+    struct node
+	{
+        Instruction* instptr;
+		link next;
+    };
+/***************[ End of struct declarations ]****************/
+/**********function prototypes************/
+
+/*linkedlist.c prototypes*/
+link Add(link head, Instruction *inst);
+void PrintList(link head);
+void FreeItems(link head);
+void FreeList(link head);
+
+/*format.c prototypes*/
+link FormatCall(unsigned int reclength, 
+					unsigned char inst[30], link head);
+int Bit(unsigned char curbyte, int bytenx);
+unsigned char AsciiToHex(unsigned char c1, unsigned char c2);
+unsigned char ByteToHalfByte(unsigned char curbyte, 
+											int halfnx);
+void BinaryPrint(unsigned char curbyte);
+Instruction* OpcodeCopy(unsigned char curbyte, 
+									Instruction* instptr);
 #endif /* instruction_h */
 
 /*******************[ EOF: instruction.h ]********************/

@@ -31,8 +31,8 @@ typedef struct Op
 
 #endif /* optab_h */
 
-//prototypes
-int sicInstCheck(unsigned char curByte);
-char* sicInstMnemonic(unsigned char curByte);
+/**prototypes**/
+int SicInstCheck(unsigned char curbyte);
+char* SicInstMnemonic(unsigned char curbyte);
 
 /*******************[ EOF: optab.h ]********************/
