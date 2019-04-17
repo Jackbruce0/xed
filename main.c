@@ -17,6 +17,7 @@
 #include <string.h>
 #include "records.h"
 #include "instruction.h"
+#include "symbol.h"
 
 /*************************************************************
  I DON'T KNOW WHERE TO PUT THESE PROTOTYPES
@@ -123,6 +124,10 @@ int main(int argc, const char * argv[])
         }
     }
     End *E = GetEnd(objfile, objfname);
+    
+    /* SYM and LIT table processing */
+    BuildTables(symfile, symfname);
+    /********************************/
     
     fclose(objfile);
     fclose(symfile);
