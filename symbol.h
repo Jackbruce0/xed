@@ -24,7 +24,10 @@ typedef struct Symbol
 
 typedef struct Literal
 {
-    
+    char name[7];
+    char literal[9];
+    unsigned int length;
+    unsigned int address;
 }Literal;
 
 void BuildTables(FILE *symfile, char *symfname);
@@ -36,6 +39,8 @@ int LitHeaderPresent(FILE *symfile);
 void BuildSYMTAB(FILE *symfile, int size);
 
 void BuildLITTAB(FILE *symfile, int size);
+
+char *SplitString(char *str, int startNX, int endNX);
 
 #endif /* symbol_h */
 
