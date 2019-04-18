@@ -210,4 +210,4 @@ char* SicInstMnemonic(unsigned char curbyte){
 	}
 }
 
-/*******************[ EOF: optab.c ]********************/
+/*********************[ EOF: optab.c ]************************/
