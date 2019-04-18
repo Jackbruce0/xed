@@ -42,6 +42,8 @@ void BuildLITTAB(FILE *symfile, int size);
 
 char *GetSymbolName(int address);
 
+Literal *GetLiteral(unsigned int address);
+
 char *SplitString(char *str, int startNX, int endNX);
 
 #endif /* symbol_h */

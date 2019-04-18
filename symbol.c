@@ -72,10 +72,17 @@ void BuildTables(FILE *symfile, char *symfname)
     rewind(symfile);
     BuildSYMTAB(symfile, symcount);
     BuildLITTAB(symfile, litcount);
+    
     /**** TEST of methods ****/
     char test[7];
     strncpy(test, GetSymbolName(33), 7);
-    printf("GetSymbolName returns: %s\n\n", test);
+    printf("GetSymbolName returns: %s\n", test);
+    
+    Literal *litty = GetLiteral(6);
+    printf("GetLiteral returns:\n  name: '%s'\n literal: %s\n  length: %d\n  address: %06X\n\n"
+           , litty->name, litty->literal, litty->length,
+           litty->address);
+    
     /****** END OF TEST ******/
 } /* End function Build_Tables */
 
@@ -235,6 +242,35 @@ char *GetSymbolName(int value)
     }
     printf("\nLabel found: %s\n\n", label);
     return label;
+} /* End of function Get_Symbol_Name */
+
+/*************************************************************
+ function: GetLiteral
+ Notes: When given a value, this function will search LITTAB
+    and return Literal* of the appropriate literal name. If no
+    literal is return value will POINT to NULL
+ I/O: input paramaters: address of potential literal
+      output: COPY of literal pointer (if found)
+ *************************************************************/
+Literal *GetLiteral(unsigned int address)
+{
+    Literal* lit = NULL;
+    int index = 0;
+    while(LITTAB[index] != NULL)
+    {
+        if(address == LITTAB[index]->address)
+        {
+            lit = malloc(sizeof(Literal));
+            strncpy(lit->name, LITTAB[index]->name, 7);
+            strncpy(lit->literal, LITTAB[index]->literal, 9);
+            lit->address = LITTAB[index]->address;
+            lit->length = LITTAB[index]->length;
+            break;
+        }
+        index++;
+    }
+    
+    return lit;
 }
 
 /*************************************************************
