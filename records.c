@@ -100,6 +100,7 @@ Header* GetHeader(FILE *objfile, char* objfname)
                                      lennx++, 6);
         }
     }
+	hptr->name[6] = '\0';
     fgetc(objfile); /* Burn '\n' at the end of
                      Header record */
 	fgetc(objfile);//needed to add a second one to work(Jake)

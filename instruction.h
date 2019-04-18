@@ -24,18 +24,19 @@ typedef struct Instruction
                             6 hex digits (4 in example)
                             USE CharToNum to populate this
                             variable */
-    char label[6]; /* Col 2
+    char label[7]; /* Col 2
                     ALL SPACES IF NONE */
-    char opname[7]; /* Col 3
+    char opname[8]; /* Col 3
                      if (format 4) [0] = '+'
                      else [0] = ' ' */
-    char operand[9]; /* Col 4
+    char operand[10]; /* Col 4
                       if (immediate) [0] = '#'
-                      if (indirect) [0] = '&'
+                      if (indirect) [0] = '@'
                       if (literal) [0] = '='
                       else [0] = ' ' */
     unsigned char objcode[4]; /* Col 5
                                raw obj code for each line */
+	int format;/*keeps track of format for locctr*/
 } Instruction;
 
 typedef struct node* link;
@@ -50,13 +51,15 @@ typedef struct node* link;
 
 /*linkedlist.c prototypes*/
 link Add(link head, Instruction *inst);
+unsigned int GetLocctr(link head);
 void PrintList(link head);
 void FreeItems(link head);
 void FreeList(link head);
 
 /*format.c prototypes*/
 link FormatCall(unsigned int reclength, 
-					unsigned char inst[30], link head);
+				unsigned char inst[30], link head,
+				unsigned int locctr);
 int Bit(unsigned char curbyte, int bytenx);
 unsigned char AsciiToHex(unsigned char c1, unsigned char c2);
 unsigned char ByteToHalfByte(unsigned char curbyte, 

@@ -16,7 +16,7 @@
 /***********************[ Record Types ]**********************/
 typedef struct Header
 {
-    char name[6]; //[1-6] (ASCII form)
+    char name[7]; //[1-6] (ASCII form)
     unsigned int startadr; //[7-12] (numeric form)
     unsigned int prglen; //[13-18] (numeric form)
 }Header;
