@@ -133,7 +133,8 @@ int main(int argc, const char * argv[])
 	for(textnx=0; textnx<GetTcount(); textnx++)
 	{
 		head=FormatCall(T[textnx]->reclength,
-						T[textnx]->inst, head);
+						T[textnx]->inst, head,
+						GetLocctr(head));
 	}
 	/******** END OF STEP 2 *******/
     
@@ -159,7 +160,7 @@ int main(int argc, const char * argv[])
            M[0]->modLength);
     printf("Address of 1st executable instruction: %06X\n",
            E->firstinst);
-	printf("\nSOUCE CODE DISASSEMBLEMENT PROGRESS\n");
+	printf("\nSOURCE CODE DISASSEMBLEMENT PROGRESS\n");
 	PrintList(head);
     ///////
 	FreeMem(objfname, symfname, H, T, M, E, head);

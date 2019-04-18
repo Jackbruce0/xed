@@ -1,7 +1,7 @@
 0000  .  SOURCE CODE FOR EXAM #2
 0000  EXAM2    START   0                  
 0000  FIRST    CLEAR   X        050000
-0003           LDA    #0
+0003           LDA    #0        010000
 0003          +LDB    #TABLE2   69101791
 000B           BASE    TABLE2
 000B  LOOP     ADD     TABLE,X  1BA013

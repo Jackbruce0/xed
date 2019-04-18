@@ -22,10 +22,12 @@ enum boolean {false, true};
  *************************************************************/
 
 link FormatCall(unsigned int reclength, 
-						unsigned char inst[30], link head)
+				unsigned char inst[30], link head,
+				unsigned int locctr)
 {
     unsigned char curbyte, c1, c2;
     int i;
+	enum boolean baseflag = false;
 	
     for(i=0; i<reclength; i++)
 	{
@@ -36,19 +38,30 @@ link FormatCall(unsigned int reclength,
 		{
 			printf("Format 1: %6s ", 
 							SicInstMnemonic(curbyte));
+			instptr->startadr=locctr;
 			instptr->opname[0]=' ';
+			instptr = OpcodeCopy(curbyte, instptr);
 			BinaryPrint(inst[i]);
+			locctr++;
+			instptr->format=1;
+			instptr->objcode[0] = inst[i];
 		}
 /**************FORMAT 2**************/
 		else if(SicInstCheck(curbyte)==2)
 		{
 			printf("Format 2: %6s ", SicInstMnemonic(curbyte));
+			instptr->startadr=locctr;
 			instptr->opname[0]=' ';
+			instptr = OpcodeCopy(curbyte, instptr);
 			unsigned char r1 = ByteToHalfByte(inst[i+1], 1);
 			unsigned char r2 = ByteToHalfByte(inst[i+1], 0);
 			BinaryPrint(inst[i]);
 			BinaryPrint(inst[i+1]);
 			printf("				r1 %01X,	r2 %01X", r1, r2);
+			locctr+=2;
+			instptr->format=2;
+			instptr->objcode[0] = inst[i];
+			instptr->objcode[1] = inst[i+1];
 			i++;
 		}
 /****************FORMAT 0/3/4*****************/
@@ -60,7 +73,9 @@ link FormatCall(unsigned int reclength,
 			if( Bit(curbyte,1)==0 && Bit(curbyte,0)==0 )
 			{
 				printf("Format 0: %6s ", SicInstMnemonic(curbyte));
+				instptr->startadr=locctr;
 				instptr->opname[0]=' ';
+				instptr = OpcodeCopy(curbyte, instptr);
 				unsigned int disp1 = (Bit(inst[i+1],6)<<14) + (Bit(inst[i+1],5)<<13) + (Bit(inst[i+1],4)<<12);
 				unsigned int disp2 = ByteToHalfByte(inst[i+1], 0) << 8;
 				unsigned char disp3 = inst[i+2];
@@ -72,6 +87,11 @@ link FormatCall(unsigned int reclength,
 				BinaryPrint(inst[i+2]);
 				unsigned int disp = disp1 + disp2 + disp3;
 				printf("			x %1d	disp	%03X", xflag, disp);
+				locctr+=3;
+				instptr->format=3;
+				instptr->objcode[0] = inst[i];
+				instptr->objcode[1] = inst[i+1];
+				instptr->objcode[2] = inst[i+2];
 				i+=2;
 			}
 			//have a method to grab 2nd byte to check if format 3 or 4
@@ -80,11 +100,14 @@ link FormatCall(unsigned int reclength,
 			{
 				if(Bit(inst[i+1],4)==0)
 				{
+					unsigned int targetaddress;
 					printf("Format 3: %6s ", SicInstMnemonic(curbyte));
+					instptr->startadr=locctr;
 					instptr->opname[0]=' ';
 					instptr = OpcodeCopy(curbyte, instptr);
-					unsigned int disp1 = ByteToHalfByte(inst[i+1], 0) << 8;
-					unsigned char disp2 = inst[i+2];
+					int disp1 = ByteToHalfByte(inst[i+1], 0) << 8;
+					char disp2 = inst[i+2];
+					int disp = disp1 + disp2;
 					enum boolean xflag=false;
 					char* addressingmode;
 					if(Bit(inst[i+1],7)==1)
@@ -92,7 +115,7 @@ link FormatCall(unsigned int reclength,
 					if(Bit(curbyte,1)==1&&Bit(curbyte,0)==0)
 					{
 						addressingmode = "Indirect";
-						instptr->operand[0]='&';
+						instptr->operand[0]='@';
 					}
 					else if(Bit(curbyte,1)==0&&Bit(curbyte,0)==1)
 					{
@@ -103,21 +126,64 @@ link FormatCall(unsigned int reclength,
 					{
 						instptr->operand[0]=' ';
 						if(Bit(inst[i+1],5)==1)
+						{
 							addressingmode = "PC Relative";
-						else
+							targetaddress = disp + locctr + 3;
+							if(baseflag==true)
+							{
+								Instruction* instptrbase = malloc(sizeof(Instruction));
+								instptrbase->startadr=locctr;
+								instptrbase->opname[0] = ' ';
+								instptrbase->opname[1] = 'N';
+								instptrbase->opname[2] = 'O';
+								instptrbase->opname[3] = 'B';
+								instptrbase->opname[4] = 'A';
+								instptrbase->opname[5] = 'S';
+								instptrbase->opname[6] = 'E';
+								instptrbase->opname[7] = '\0';
+								head = Add(head, instptrbase);
+								baseflag=false;
+							}
+						}
+						else if(Bit(inst[i+1],6)==1)
+						{
 							addressingmode = "Base Relative";
+							if(baseflag==false)
+							{
+								Instruction* instptrbase = malloc(sizeof(Instruction));
+								instptrbase->startadr=locctr;
+								instptrbase->opname[0] = ' ';
+								instptrbase->opname[1] = 'B';
+								instptrbase->opname[2] = 'A';
+								instptrbase->opname[3] = 'S';
+								instptrbase->opname[4] = 'E';
+								instptrbase->opname[5] = '\0';
+								head = Add(head, instptrbase);
+								baseflag=true;
+							}
+						}
+						else
+						{
+							addressingmode = "Direct";
+							targetaddress = disp;
+						}
 					}
 					BinaryPrint(inst[i]);
 					BinaryPrint(inst[i+1]);
 					BinaryPrint(inst[i+2]);
-					unsigned int disp = disp1 + disp2;
-					printf("			x %1d	disp	%03X    %s", xflag, disp, addressingmode);
+					printf("			x %1d	TA  	%04X   %s", xflag, targetaddress, addressingmode);
+					locctr+=3;
+					instptr->format=3;
+					instptr->objcode[0] = inst[i];
+					instptr->objcode[1] = inst[i+1];
+					instptr->objcode[2] = inst[i+2];
 					i+=2;
 				}
 /*****************FORMAT 4********************/
 				else
 				{
 					printf("Format 4: %6s ", SicInstMnemonic(curbyte));
+					instptr->startadr=locctr;
 					instptr->opname[0]='+';
 					instptr = OpcodeCopy(curbyte, instptr);
 					unsigned int address1 = ByteToHalfByte(inst[i+1], 0) << 16;
@@ -130,7 +196,7 @@ link FormatCall(unsigned int reclength,
 					if(Bit(curbyte,1)==1&&Bit(curbyte,0)==0)
 					{
 						addressingmode = "Indirect";
-						instptr->operand[0]='&';
+						instptr->operand[0]='@';
 					}
 					else if(Bit(curbyte,1)==0&&Bit(curbyte,0)==1)
 					{
@@ -148,6 +214,12 @@ link FormatCall(unsigned int reclength,
 					BinaryPrint(inst[i+3]);
 					unsigned int address = address1 + address2 + address3;
 					printf("	x %1d	adrs	%05X  %s", xflag, address, addressingmode);
+					locctr+=4;
+					instptr->format=4;
+					instptr->objcode[0] = inst[i];
+					instptr->objcode[1] = inst[i+1];
+					instptr->objcode[2] = inst[i+2];
+					instptr->objcode[3] = inst[i+3];
 					i+=3;
 				}
 			}
@@ -280,12 +352,12 @@ Instruction* OpcodeCopy(unsigned char curbyte,
 	{
 		instptr->opname[i] = opcode[i-1];
     }
-	while(i!=6)
+	while(i!=7)
 	{
 		instptr->opname[i] = ' ';
 		i++;
 	}
-	instptr->opname[6]='\0';
+	instptr->opname[7]='\0';
 	return instptr;
 }
 /*******************[ EOF: format.c ]********************/

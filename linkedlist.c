@@ -40,6 +40,34 @@ link Add(link head, Instruction *inst)
 }
 
 /*************************************************************
+ function: GetLocctr
+ Notes: Gets the starting address for the next Text record
+		being sent.
+ I/O: input paramaters: Head of the linked list
+      output: unsigned int locctr, the last location address
+ *************************************************************/
+unsigned int GetLocctr(link head)
+{
+    link listptr = head;
+	if(head==NULL)
+	{
+		return 0;
+	}
+	while(listptr->next!=NULL)
+	{
+		listptr = listptr->next;
+	}
+	if(listptr->instptr->format==1)
+		return listptr->instptr->startadr+1;
+	else if(listptr->instptr->format==2)
+		return listptr->instptr->startadr+2;
+	else if(listptr->instptr->format==4)
+		return listptr->instptr->startadr+4;
+	else
+		return listptr->instptr->startadr+3;
+} /* End function GetLocctr */
+
+/*************************************************************
  function: PrintList
  Notes: Prints out instruction struct contents. This will be
 		the main function for printing out the source code.
@@ -50,14 +78,21 @@ link Add(link head, Instruction *inst)
 void PrintList(link head)
 {
 	link listptr = head;
-	int i;
+	int i,j;
 	while(listptr!=NULL)
 	{
+		printf("%04X ", listptr->instptr->startadr);
 		for(i=0; i<7; i++)
 		{
 			printf("%c",listptr->instptr->opname[i]);
 		}
-		printf("%c", listptr->instptr->operand[0]);
+		printf("%c ", listptr->instptr->operand[0]);
+		
+		for(j=0; j<(listptr->instptr->format); j++)
+		{
+			printf("%X", listptr->instptr->objcode[j]);
+		}
+		
 		printf("\n");
 		listptr=listptr->next;
 	}
