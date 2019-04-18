@@ -78,8 +78,8 @@ void BuildTables(FILE *symfile, char *symfname)
     strncpy(test, GetSymbolName(33), 7);
     printf("GetSymbolName returns: %s\n", test);
     
-    Literal *litty = GetLiteral(6);
-    printf("GetLiteral returns:\n  name: '%s'\n literal: %s\n  length: %d\n  address: %06X\n\n"
+    Literal *litty = GetLiteral(3);
+    printf("GetLiteral returns:\n  name: '%s'\n  literal: %s\n  length: %d\n  address: %06X\n\n"
            , litty->name, litty->literal, litty->length,
            litty->address);
     

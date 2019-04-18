@@ -360,4 +360,4 @@ Instruction* OpcodeCopy(unsigned char curbyte,
 	instptr->opname[7]='\0';
 	return instptr;
 }
-/*******************[ EOF: format.c ]********************/
+/**********************[ EOF: format.c ]***********************/

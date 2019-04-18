@@ -5,6 +5,7 @@
  File: linkedlist.c
  Notes:
  *************************************************************/
+
 #include <stdlib.h>
 #include "instruction.h"
 
@@ -15,7 +16,6 @@
 									Instruction pointer
       output: Returns altered head of linked list
  *************************************************************/
-
 link Add(link head, Instruction *inst)
 {
 	//problem between here
