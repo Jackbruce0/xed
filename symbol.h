@@ -40,6 +40,8 @@ void BuildSYMTAB(FILE *symfile, int size);
 
 void BuildLITTAB(FILE *symfile, int size);
 
+char *GetSymbolName(int address);
+
 char *SplitString(char *str, int startNX, int endNX);
 
 #endif /* symbol_h */

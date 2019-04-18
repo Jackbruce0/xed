@@ -72,6 +72,11 @@ void BuildTables(FILE *symfile, char *symfname)
     rewind(symfile);
     BuildSYMTAB(symfile, symcount);
     BuildLITTAB(symfile, litcount);
+    /**** TEST of methods ****/
+    char test[7];
+    strncpy(test, GetSymbolName(33), 7);
+    printf("GetSymbolName returns: %s\n\n", test);
+    /****** END OF TEST ******/
 } /* End function Build_Tables */
 
 /*************************************************************
@@ -114,7 +119,7 @@ int LitHeaderPresent(FILE *symfile)
       output: void
  *************************************************************/
 void BuildSYMTAB(FILE *symfile, int size) {
-    SYMTAB = malloc(size*sizeof(Symbol*));
+    SYMTAB = malloc((size + 1)*sizeof(Symbol*));
     char line[100];
     fgets(line, 99, symfile); /* Burn 1st 2 lines of file */
     fgets(line, 99, symfile);
@@ -147,6 +152,7 @@ void BuildSYMTAB(FILE *symfile, int size) {
         
         i++;
     }
+    SYMTAB[size] = NULL;
 } /* End function Build_SYMTAB */
 
 /*************************************************************
@@ -160,7 +166,7 @@ void BuildSYMTAB(FILE *symfile, int size) {
  *************************************************************/
 void BuildLITTAB(FILE *symfile, int size)
 {
-    LITTAB = malloc(size*sizeof(Literal*));
+    LITTAB = malloc((size + 1)*sizeof(Literal*));
     char line[100];
     fgets(line, 99, symfile); /* Burn 1st 3 lines after last
                                SYMTAB value*/
@@ -183,7 +189,8 @@ void BuildLITTAB(FILE *symfile, int size)
         strncpy(token, SplitString(line,8, 16), 9);
         strncpy(LITTAB[i]->literal, token, 9);
         /* 19 = length */
-        LITTAB[i]->length = CharToNum(LITTAB[i]->length, line[19], 0, 1);
+        LITTAB[i]->length = CharToNum(LITTAB[i]->length,
+                                      line[19], 0, 1);
         /* 24 - 29 = Address */
         strncpy(token, SplitString(line,24, 29), 7);
         j = 0;
@@ -194,13 +201,41 @@ void BuildLITTAB(FILE *symfile, int size)
         }
         
         /* TEST */
-        printf("%s|  |%s|  |%X|  |%06X|\n", LITTAB[i]->name, LITTAB[i]->literal, LITTAB[i]->length, LITTAB[i]->address);
+        printf("%s  %s  %X  %06X\n", LITTAB[i]->name,
+               LITTAB[i]->literal, LITTAB[i]->length,
+               LITTAB[i]->address);
         /********/
         
         i++;
     }
+    LITTAB[size] = NULL;
 }
 
+/*************************************************************
+ function: GetSymbolName
+ Notes: When given a value, this function will search SYMTAB
+    and return char* of the appropriate symbol name. If no
+    symbol is found this function will return whitespace.
+ I/O: input paramaters: value of potential symbol
+      output: label associated with that value (if it exists)
+ *************************************************************/
+char *GetSymbolName(int value)
+{
+    char *label = malloc(7);
+    strncpy(label, "      \0", 7);
+    int index = 0;
+    while(SYMTAB[index] != NULL)
+    {
+        if(value == SYMTAB[index]->value)
+        {
+            strncpy(label,SYMTAB[index]->label,7);
+            break;
+        }
+        index++;
+    }
+    printf("\nLabel found: %s\n\n", label);
+    return label;
+}
 
 /*************************************************************
  function: SplitString
@@ -224,7 +259,5 @@ char *SplitString(char *str, int startNX, int endNX)
     substr[i] = '\0';
     return substr;
 } /* End of function Split_String */
-
-
 
 /*********************[ EOF: symbol.h ]***********************/
