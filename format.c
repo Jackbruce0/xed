@@ -33,6 +33,11 @@ link FormatCall(unsigned int reclength,
     for(i=0; i<reclength; i++)
 	{
 		Instruction* instptr = malloc(sizeof(Instruction));
+        
+        //Initialize your variables jake!
+        instptr->startadr = 0;
+        instptr->operand[0] = ' ';
+        
 		curbyte = inst[i];
 		strncpy(instptr->label, GetSymbolName(locctr), 7);
 /**************FORMAT 1**************/

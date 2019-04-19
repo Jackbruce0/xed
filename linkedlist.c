@@ -79,24 +79,31 @@ void PrintList(link head)
 	int i,j;
 	while(listptr!=NULL)
 	{
-		printf("%04X ", listptr->instptr->startadr);
+		printf("%04X  ", listptr->instptr->startadr);
 
-		printf("%s", listptr->instptr->label);
+		printf("%s ", listptr->instptr->label);
 
-		for(i=0; i<7; i++)
-		{
-			printf("%c",listptr->instptr->opname[i]);
-		}
+//        for(i=0; i<7; i++)
+//        {
+//            printf("%c",listptr->instptr->opname[i]);
+//        }
+        printf("%s  ", listptr->instptr->opname);
+        
+        // operand[0] is unitialized often
 		printf("%c ", listptr->instptr->operand[0]);
 		
-		for(j=0; j<(listptr->instptr->format); j++)
-		{
-			printf("%X", listptr->instptr->objcode[j]);
-		}
-		
+        for(j=0; j<(listptr->instptr->format); j++)
+        {
+            printf("%X", listptr->instptr->objcode[j]); /* I'm thinking we should change objcode to an unsigned integer, it will help with printing */
+        }
+        
+        //printf("%06X  ", listptr->instptr->objcode);
+        
 		printf("\n");
 		listptr=listptr->next;
 	}
+    
+    
 	return;
 }
 
