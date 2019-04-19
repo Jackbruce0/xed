@@ -54,9 +54,9 @@ FILE *FileOpen(char *fileName, char *mode)
  *************************************************************/
 char *GetFileExt(char *baseName, char *ext)
 {
-    char *fileName = malloc((strlen(baseName)+4)*sizeof(char));
-    strcpy(fileName, baseName);
-    strcat(fileName, ext);
+    char *fileName = malloc((strlen(baseName)+5)*sizeof(char));
+    strncpy(fileName, baseName, strlen(baseName) + 1);
+    strncat(fileName, ext, 4);
     return fileName;
 } /* End function Get_File_Ext */
 
@@ -139,7 +139,7 @@ int main(int argc, const char * argv[])
 	{
 		head=FormatCall(T[textnx]->reclength,
 						T[textnx]->inst, head,
-						GetLocctr(head));
+						T[textnx]->startadr);
 	}
 	/******** END OF STEP 2 *******/
     
