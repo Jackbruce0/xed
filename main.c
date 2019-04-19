@@ -139,7 +139,7 @@ int main(int argc, const char * argv[])
 	{
 		head=FormatCall(T[textnx]->reclength,
 						T[textnx]->inst, head,
-						H->startadr);
+						T[textnx]->startadr);
 	}
 	/******** END OF STEP 2 *******/
     
