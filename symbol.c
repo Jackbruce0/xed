@@ -10,11 +10,7 @@
  *************************************************************/
 
 #include "symbol.h"
-#include "records.h" /* Spaghetti code?
-                        We should put char to num
-                        in another place*/
-/* CharToNum and StringSplit should go to a general purpose
-header file */
+#include "xedlib.h"
 
 Symbol **SYMTAB;
 Literal **LITTAB;
@@ -272,28 +268,5 @@ Literal *GetLiteral(unsigned int address)
     
     return lit;
 }
-
-/*************************************************************
- function: SplitString
- Notes: Returns substring specified by startNX and endNX
-    DOES NOT CHECK FOR INVALID INDICES AND VALID SUBSTRING
-    LENGTH
-I/O: input paramaters: str, startNX, endNX
-     output: substring fromm str[startNX] - str[endNX]
- *************************************************************/
-char *SplitString(char *str, int startNX, int endNX)
-{
-    /* 30 char max substring including \0 */
-    char* substr = malloc(30);
-    int i = 0;
-    while(startNX <= endNX)
-    {
-        substr[i] = str[startNX];
-        i++;
-        startNX++;
-    }
-    substr[i] = '\0';
-    return substr;
-} /* End of function Split_String */
 
 /*********************[ EOF: symbol.h ]***********************/

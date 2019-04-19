@@ -49,9 +49,6 @@ int GetMcount(void);
 
 Header *GetHeader(FILE *objfile, char *objfname);
 
-int CharToNum(unsigned int dest, unsigned char input,
-               int pos, int size);
-
 Text *GetText(FILE *objfile, char *objfname);
 
 Mod *GetMod(FILE *objfile, char* objfname);

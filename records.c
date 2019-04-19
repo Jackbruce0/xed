@@ -8,8 +8,8 @@
  *************************************************************/
 
 #include <stdlib.h>
-#include <math.h>
 #include "records.h"
+#include "xedlib.h"
 
 /*************************************************************
  function: CountRecords
@@ -108,41 +108,6 @@ Header* GetHeader(FILE *objfile, char* objfname)
     
     return hptr;
 } /* End function Get_Header */
-
-/*************************************************************
- function: CharToNum (DECIMAL NUMBER)
- Notes: Takes character, interprets it as a hex digit, and
-    adds value based on position to a destination integer.
-    FOR POSITION: 0 = most significant place
- I/O: input paramaters: destination int, character,
-        position, size
-        output: dest int (incomplete until pos = size - 1
- *************************************************************/
-int CharToNum(unsigned int dest, unsigned char input,
-              int pos, int size)
-{
-    /* Store input's ASCII value (decimal) as an integer */
-    unsigned int charnum = (unsigned int)input;
-    /* Convert ASCII value to numeric value */
-    if (charnum >= 48 && charnum <= 57) // [0-9]
-    {
-        charnum -= 48;
-    }
-    else if (charnum >= 65 && charnum <= 70) // [A-F]
-    {
-        charnum -= 55; // only takes care of A-F
-    }
-    else
-    {
-        fprintf(stderr, "Invalid value passed to 'CharToNum': '%c'\n", input);
-        //exit(1);
-    }
-    /* Add appropriate value to dest */
-    int power = size - pos - 1;
-    charnum = charnum * pow(16, power);
-    /* Add value to dest and return */
-    return dest += charnum;
-} /* End function Char_To_Num */
 
 /*************************************************************
  function: GetText
