@@ -134,9 +134,8 @@ int CharToNum(unsigned int dest, unsigned char input,
     }
     else
     {
-        fprintf(stderr, "Invalid value passed to \
-                'CharToNum': '%c'\n", input);
-        exit(1);
+        fprintf(stderr, "Invalid value passed to 'CharToNum': '%c'\n", input);
+        //exit(1);
     }
     /* Add appropriate value to dest */
     int power = size - pos - 1;

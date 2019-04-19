@@ -74,14 +74,14 @@ void BuildTables(FILE *symfile, char *symfname)
     BuildLITTAB(symfile, litcount);
     
     /**** TEST of methods ****/
-    char test[7];
-    strncpy(test, GetSymbolName(33), 7);
-    printf("GetSymbolName returns: %s\n", test);
-    
-    Literal *litty = GetLiteral(6); /* BAD ADDRESS WILL CRASH PROGRAM */
-    printf("GetLiteral returns:\n  name: '%s'\n  literal: %s\n  length: %d\n  address: %06X\n\n"
-           , litty->name, litty->literal, litty->length,
-           litty->address);
+//    char test[7];
+//    strncpy(test, GetSymbolName(33), 7);
+//    printf("GetSymbolName returns: %s\n", test);
+//
+//    Literal *litty = GetLiteral(6); /* BAD ADDRESS WILL CRASH PROGRAM */
+//    printf("GetLiteral returns:\n  name: '%s'\n  literal: %s\n  length: %d\n  address: %06X\n\n"
+//           , litty->name, litty->literal, litty->length,
+//           litty->address);
     
     /****** END OF TEST ******/
 } /* End function Build_Tables */

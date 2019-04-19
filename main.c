@@ -159,10 +159,10 @@ int main(int argc, const char * argv[])
         i++;
     }
     printf("\n\n");
-    printf("1st mod record start address: %06X\n",
-           M[0]->startadr);
-    printf("1st mod record length: %02X\n\n",
-           M[0]->modLength);
+//    printf("1st mod record start address: %06X\n",
+//           M[0]->startadr);
+//    printf("1st mod record length: %02X\n\n",
+//           M[0]->modLength);
     printf("Address of 1st executable instruction: %06X\n",
            E->firstinst);
 	printf("\nSOURCE CODE DISASSEMBLEMENT PROGRESS\n");
