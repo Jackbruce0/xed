@@ -80,6 +80,9 @@ void PrintList(link head)
 	while(listptr!=NULL)
 	{
 		printf("%04X ", listptr->instptr->startadr);
+
+		printf("%s", listptr->instptr->label);
+
 		for(i=0; i<7; i++)
 		{
 			printf("%c",listptr->instptr->opname[i]);

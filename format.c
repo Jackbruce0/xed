@@ -10,6 +10,7 @@
 #include <string.h>
 #include "instruction.h"
 #include "optab.h"
+#include "symbol.h"
 
 enum boolean {false, true};
 
@@ -33,6 +34,7 @@ link FormatCall(unsigned int reclength,
 	{
 		Instruction* instptr = malloc(sizeof(Instruction));
 		curbyte = inst[i];
+		strncpy(instptr->label, GetSymbolName(locctr), 7);
 /**************FORMAT 1**************/
 		if(SicInstCheck(curbyte)==1)
 		{
