@@ -27,7 +27,7 @@ link FormatCall(unsigned int reclength,
 				unsigned int locctr)
 {
     unsigned char curbyte, c1, c2;
-    int i;
+    int i, basevalue;
 	enum boolean baseflag = false;
 	
     for(i=0; i<reclength; i++)
@@ -95,6 +95,10 @@ link FormatCall(unsigned int reclength,
 				BinaryPrint(inst[i+2]);
 				unsigned int targetaddress = disp1 + disp2 + disp3;
 				strncpy(instptr->operand+1, GetSymbolName(targetaddress), 7);
+				if(xflag==true)
+				{
+					strncpy(instptr->operand+(strlen(GetSymbolName(targetaddress))+1), ",X", 2);
+				}
 				printf("			x %1d	target	%05X", xflag, targetaddress);
 				locctr+=3;
 				instptr->format=3;
@@ -115,74 +119,82 @@ link FormatCall(unsigned int reclength,
 					instptr->opname[0]=' ';
 					instptr = OpcodeCopy(curbyte, instptr);
 					int disp1 = ByteToHalfByte(inst[i+1], 0) << 8;
-					char disp2 = inst[i+2];
+					int disp2 = inst[i+2];
 					int disp = disp1 + disp2;
+					if(Bit(ByteToHalfByte(inst[i+1],0),3)==1)
+					{
+						disp=-(0x1000-disp);
+					}
 					enum boolean xflag=false;
 					char* addressingmode;
 					if(Bit(inst[i+1],7)==1)
 						xflag=true;
 					if(Bit(curbyte,1)==1&&Bit(curbyte,0)==0)
 					{
-						addressingmode = "Indirect";
+						//addressingmode = "Indirect";
 						instptr->operand[0]='@';
 					}
 					else if(Bit(curbyte,1)==0&&Bit(curbyte,0)==1)
 					{
-						addressingmode = "Immediate";
+						//addressingmode = "Immediate";
 						instptr->operand[0]='#';
 					}
 					else
 					{
 						instptr->operand[0]=' ';
-						if(Bit(inst[i+1],5)==1)
+					}
+					if(Bit(inst[i+1],5)==1)
+					{
+						addressingmode = "PC Relative";
+						targetaddress = disp + locctr + 3;
+						/*
+						if(baseflag==true)
 						{
-							addressingmode = "PC Relative";
-							targetaddress = disp + locctr + 3;
-							if(baseflag==true)
-							{
-								Instruction* instptrbase = malloc(sizeof(Instruction));
-                                instptrbase->format = -1;
-								instptrbase->startadr=locctr;
-								instptrbase->opname[0] = ' ';
-								instptrbase->opname[1] = 'N';
-								instptrbase->opname[2] = 'O';
-								instptrbase->opname[3] = 'B';
-								instptrbase->opname[4] = 'A';
-								instptrbase->opname[5] = 'S';
-								instptrbase->opname[6] = 'E';
-								instptrbase->opname[7] = '\0';
-								head = Add(head, instptrbase);
-								baseflag=false;
-							}
+							Instruction* instptrbase = malloc(sizeof(Instruction));
+							instptrbase->startadr=locctr;
+							instptrbase->opname[0] = ' ';
+							instptrbase->opname[1] = 'N';
+							instptrbase->opname[2] = 'O';
+							instptrbase->opname[3] = 'B';
+							instptrbase->opname[4] = 'A';
+							instptrbase->opname[5] = 'S';
+							instptrbase->opname[6] = 'E';
+							instptrbase->opname[7] = '\0';
+							head = Add(head, instptrbase);
+							baseflag=false;
 						}
-						else if(Bit(inst[i+1],6)==1)
+						*/
+					}
+					else if(Bit(inst[i+1],6)==1)
+					{
+						addressingmode = "Base Relative";
+						if(baseflag==false)
 						{
-							addressingmode = "Base Relative";
-							if(baseflag==false)
-							{
-								Instruction* instptrbase = malloc(sizeof(Instruction));
-                                instptrbase->format = -1;
-								instptrbase->startadr=locctr;
-								instptrbase->opname[0] = ' ';
-								instptrbase->opname[1] = 'B';
-								instptrbase->opname[2] = 'A';
-								instptrbase->opname[3] = 'S';
-								instptrbase->opname[4] = 'E';
-								instptrbase->opname[5] = '\0';
-								head = Add(head, instptrbase);
-								baseflag=true;
-							}
+							basevalue = locctr;
+							Instruction* instptrbase = malloc(sizeof(Instruction));
+                            instptrbase->format = -1;
+							instptrbase->startadr=locctr;
+							strncpy(instptrbase->label, "      \0", 7);
+							strncpy(instptrbase->opname, " BASE\0",5);
+							head = Add(head, instptrbase);
+							baseflag=true;
 						}
-						else
-						{
-							addressingmode = "Direct";
-							targetaddress = disp;
-						}
+						targetaddress = disp + basevalue;
+					}
+					else
+					{
+						addressingmode = "Direct";
+						targetaddress = disp;
 					}
 					BinaryPrint(inst[i]);
 					BinaryPrint(inst[i+1]);
 					BinaryPrint(inst[i+2]);
-					printf("			x %1d	TA  	%04X   %s", xflag, targetaddress, addressingmode);
+					strncpy(instptr->operand+1, GetSymbolName(targetaddress), 7);
+					if(xflag==true)
+					{
+						strncpy(instptr->operand+(strlen(GetSymbolName(targetaddress))+1), ",X", 2);
+					}
+					printf("			x %1d	TA  	%06X   %s", xflag, targetaddress, addressingmode);
 					locctr+=3;
 					instptr->format=3;
 					instptr->objcode[0] = inst[i];
@@ -224,6 +236,11 @@ link FormatCall(unsigned int reclength,
 					BinaryPrint(inst[i+2]);
 					BinaryPrint(inst[i+3]);
 					unsigned int address = address1 + address2 + address3;
+					strncpy(instptr->operand+1, GetSymbolName(address), 7);
+					if(xflag==true)
+					{
+						strncpy(instptr->operand+(strlen(GetSymbolName(address))+1), ",X", 2);
+					}
 					printf("	x %1d	adrs	%05X  %s", xflag, address, addressingmode);
 					locctr+=4;
 					instptr->format=4;
