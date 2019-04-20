@@ -99,6 +99,10 @@ link FormatCall(unsigned int reclength,
 				{
 					strncpy(instptr->operand+(strlen(GetSymbolName(targetaddress))+1), ",X", 2);
 				}
+				else
+				{
+					strncpy(instptr->operand+(strlen(GetSymbolName(targetaddress))+1), "  ", 2);
+				}
 				printf("			x %1d	target	%05X", xflag, targetaddress);
 				locctr+=3;
 				instptr->format=3;
@@ -193,6 +197,10 @@ link FormatCall(unsigned int reclength,
 					{
 						strncpy(instptr->operand+(strlen(GetSymbolName(targetaddress))+1), ",X", 2);
 					}
+					else
+					{
+						strncpy(instptr->operand+(strlen(GetSymbolName(targetaddress))+1), "  ", 2);
+					}
 					printf("			x %1d	TA  	%06X   %s", xflag, targetaddress, addressingmode);
 					locctr+=3;
 					instptr->format=3;
@@ -239,6 +247,10 @@ link FormatCall(unsigned int reclength,
 					if(xflag==true)
 					{
 						strncpy(instptr->operand+(strlen(GetSymbolName(address))+1), ",X", 2);
+					}
+					else
+					{
+						strncpy(instptr->operand+(strlen(GetSymbolName(address))+1), "  ", 2);
 					}
 					printf("	x %1d	adrs	%05X  %s", xflag, address, addressingmode);
 					locctr+=4;
