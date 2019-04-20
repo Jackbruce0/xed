@@ -36,7 +36,8 @@ typedef struct Instruction
                       else [0] = ' ' */
     unsigned char objcode[4]; /* Col 5
                                raw obj code for each line */
-	int format;/*keeps track of format for locctr*/
+	int format; /* keeps track of format for locctr
+                 format = -1 if struct is used for directive */
 } Instruction;
 
 typedef struct node* link;

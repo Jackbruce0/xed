@@ -83,27 +83,37 @@ void PrintList(link head)
 
 		printf("%s ", listptr->instptr->label);
 
-//        for(i=0; i<7; i++)
-//        {
-//            printf("%c",listptr->instptr->opname[i]);
-//        }
         printf("%s  ", listptr->instptr->opname);
         
         // operand[0] is unitialized often
         listptr->instptr->operand[9] = '\0';
-		printf("%s ", listptr->instptr->operand);
+		printf("%s   ", listptr->instptr->operand);
         
-//        for(j=0; j<(listptr->instptr->format); j++)
-//        {
-//            printf("%X", listptr->instptr->objcode[j]); /* I'm thinking we should change objcode to an unsigned integer, it will help with printing */
-//        }
         
-        //printf("%06X  ", listptr->instptr->objcode);
+        int format = listptr->instptr->format;
+        int objlen = 0;
+        if(format == 0 || format == 3)
+        {
+            objlen = 3;
+        } else if (format == 4)
+        {
+            objlen = 4;
+        } else if (format == 2)
+        {
+            objlen = 2;
+        } else if (format == 1)
+        {
+            objlen = 1;
+        }
+            
+        for(j = 0; j < objlen; j++)
+        {
+            printf("%02X", listptr->instptr->objcode[j]);
+        }
         
 		printf("\n");
 		listptr=listptr->next;
 	}
-    
     
 	return;
 }
@@ -115,7 +125,6 @@ void PrintList(link head)
  I/O: input paramaters: Head of linked list
       output: N/A
  *************************************************************/
-
 void FreeItems(link head)
 {
 	link listPtr = head;

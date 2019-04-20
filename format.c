@@ -141,6 +141,7 @@ link FormatCall(unsigned int reclength,
 							if(baseflag==true)
 							{
 								Instruction* instptrbase = malloc(sizeof(Instruction));
+                                instptrbase->format = -1;
 								instptrbase->startadr=locctr;
 								instptrbase->opname[0] = ' ';
 								instptrbase->opname[1] = 'N';
@@ -160,6 +161,7 @@ link FormatCall(unsigned int reclength,
 							if(baseflag==false)
 							{
 								Instruction* instptrbase = malloc(sizeof(Instruction));
+                                instptrbase->format = -1;
 								instptrbase->startadr=locctr;
 								instptrbase->opname[0] = ' ';
 								instptrbase->opname[1] = 'B';
@@ -254,6 +256,7 @@ link InsertRESDirectives(link HEAD, int LOCCTR, int nextaddr)
     {
         int size = 0, nextsymaddr = 0;
         Instruction *RES = malloc(sizeof(Instruction));
+        RES->format = -1;
         RES->objcode[0] = ' ';
         RES->objcode[1] = ' ';
         RES->objcode[2] = ' ';
