@@ -209,5 +209,39 @@ char* SicInstMnemonic(unsigned char curbyte){
 			exit(1);
 	}
 }
+/*************************************************************
+ function: RegisterTab
+ Notes: Sends register character back given the number value.
+ I/O: input paramaters: Integer representing register.
+      output: char of the register.
+ *************************************************************/
+ 
+char* RegisterTab(unsigned int regnum)
+{
+	char* regtab[10] = {"A", "X", "L", "B", "S", "T", "F", " ", "PC", "SW"};
+	return regtab[regnum];
+}
+
+/*************************************************************
+ function: NumOfRegisters
+ Notes: Decides if 1 or 2 registers should be displayed.
+ I/O: input paramaters: current byte to test opcode 
+      output: integer where 0=false(1 reg) and 1=true(2 reg)
+ *************************************************************/
+ 
+int NumOfRegisters(unsigned char curbyte)
+{
+	unsigned char opcode=curbyte>>2;
+	opcode<<=2;
+	switch(opcode)
+	{
+		case 0xB4:    /*1 register*/
+			return 0;
+		case 0xB8:
+			return 0;
+		default:      /*2 registers*/
+			return 1;
+	}
+}
 
 /*********************[ EOF: optab.c ]************************/
