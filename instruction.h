@@ -13,6 +13,7 @@
 #define instruction_h
 
 #include <stdio.h>
+#include "symbol.h"
 
 typedef struct Instruction
 {
@@ -69,6 +70,9 @@ void BinaryPrint(unsigned char curbyte);
 Instruction* OpcodeCopy(unsigned char curbyte, 
 									Instruction* instptr);
 link InsertRESDirectives(link HEAD, int LOCCTR, int nextaddr);
+Instruction *InsertLiteral(Literal *lit,
+                           unsigned char inst[30], int locctr ,
+                           int i);
 #endif /* instruction_h */
 
 /*******************[ EOF: instruction.h ]********************/

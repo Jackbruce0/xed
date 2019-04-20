@@ -76,7 +76,7 @@ unsigned int GetLocctr(link head)
 void PrintList(link head)
 {
 	link listptr = head;
-	int i,j;
+	int j;
 	while(listptr!=NULL)
 	{
 		printf("%04X  ", listptr->instptr->startadr);

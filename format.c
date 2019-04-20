@@ -47,21 +47,8 @@ link FormatCall(unsigned int reclength,
         if (lit != NULL)
         {
             /* an LTORG statement prior (if not EOF) */
-            instptr->startadr = locctr;
-            strncpy(instptr->label, "*     \0", 7);
-            strncpy(instptr->opname, lit->literal, 8);
-            int bytesize = lit->length / 2; /* length is
-                                             in half bytes */
-            instptr->format = bytesize; /* for printing */
-            int q = 0;
-            while(q < bytesize)
-            {
-                instptr->objcode[q] = inst[i + q];
-                q++;
-            }
-            // No operand value
-            //i++;
-            locctr += bytesize;
+            instptr = InsertLiteral(lit, inst, locctr, i);
+            locctr += instptr->format;
             Add(head,instptr);
             continue;
         }
@@ -328,7 +315,34 @@ link InsertRESDirectives(link HEAD, int LOCCTR, int nextaddr)
         HEAD = Add(HEAD, RES);
     }
     return HEAD;
-}
+} /* End of function Insert_RES_Directives */
+
+/*************************************************************
+ function: InsertLiteral
+ Notes:
+ I/O: input paramaters:
+      output: void
+ *************************************************************/
+Instruction *InsertLiteral(Literal *lit,
+                           unsigned char inst[30], int locctr ,
+                           int i)
+{
+    /* an LTORG statement prior (if not EOF) */
+    Instruction *instptr = malloc(sizeof(Instruction));
+    instptr->startadr = locctr;
+    strncpy(instptr->label, "*     \0", 7);
+    strncpy(instptr->opname, lit->literal, 8);
+    int bytesize = lit->length / 2; /* length is
+                                     in half bytes */
+    instptr->format = bytesize; /* for printing */
+    int q = 0;
+    while(q < bytesize)
+    {
+        instptr->objcode[q] = inst[i + q];
+        q++;
+    }
+    return instptr;
+} /* End of function Insert_Literal */
 
 /*************************************************************
  function: Bit
