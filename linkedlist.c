@@ -81,13 +81,13 @@ void PrintList(link head)
 	{
 		printf("%04X  ", listptr->instptr->startadr);
 
-		printf("%s ", listptr->instptr->label);
+		printf("%6s ", listptr->instptr->label);
 
-        printf("%s  ", listptr->instptr->opname);
+        printf("%7s  ", listptr->instptr->opname);
         
         // operand[0] is unitialized often
         listptr->instptr->operand[9] = '\0';
-		printf("%s   ", listptr->instptr->operand);
+		printf("%7s   ", listptr->instptr->operand);
         
         
         int format = listptr->instptr->format;

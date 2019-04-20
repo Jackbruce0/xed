@@ -26,8 +26,8 @@ link FormatCall(unsigned int reclength,
 				unsigned char inst[30], link head,
 				unsigned int locctr)
 {
-    unsigned char curbyte, c1, c2;
-    int i, basevalue;
+    unsigned char curbyte;
+    int i, basevalue = 0;
 	enum boolean baseflag = false;
 	
     for(i=0; i<reclength; i++)
@@ -40,7 +40,32 @@ link FormatCall(unsigned int reclength,
         
         
 		curbyte = inst[i];
+        /* Symbol Check */
 		strncpy(instptr->label, GetSymbolName(locctr), 7);
+        /* Literal Check */
+        Literal *lit = GetLiteral(locctr);
+        if (lit != NULL)
+        {
+            /* an LTORG statement prior (if not EOF) */
+            instptr->startadr = locctr;
+            strncpy(instptr->label, "*     \0", 7);
+            strncpy(instptr->opname, lit->literal, 8);
+            int bytesize = lit->length / 2; /* length is
+                                             in half bytes */
+            instptr->format = bytesize; /* for printing */
+            int q = 0;
+            while(q < bytesize)
+            {
+                instptr->objcode[q] = inst[i + q];
+                q++;
+            }
+            // No operand value
+            //i++;
+            locctr += bytesize;
+            Add(head,instptr);
+            continue;
+        }
+        /* End of Literal Check */
 /**************FORMAT 1**************/
 		if(SicInstCheck(curbyte)==1)
 		{
@@ -175,7 +200,8 @@ link FormatCall(unsigned int reclength,
                             instptrbase->format = -1;
 							instptrbase->startadr=locctr;
 							strncpy(instptrbase->label, "      \0", 7);
-							strncpy(instptrbase->opname, " BASE\0",5);
+							strncpy(instptrbase->opname, " BASE \0",8);
+                            strncpy(instptrbase->operand, "      \0", 7);
 							head = Add(head, instptrbase);
 							baseflag=true;
 						}
