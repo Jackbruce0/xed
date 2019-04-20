@@ -42,6 +42,8 @@ void BuildLITTAB(FILE *symfile, int size);
 
 char *GetSymbolName(int address);
 
+int NextSymbolAddress(int value);
+
 Literal *GetLiteral(unsigned int address);
 
 #endif /* symbol_h */

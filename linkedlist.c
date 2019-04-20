@@ -90,12 +90,13 @@ void PrintList(link head)
         printf("%s  ", listptr->instptr->opname);
         
         // operand[0] is unitialized often
-		printf("%c ", listptr->instptr->operand[0]);
-		
-        for(j=0; j<(listptr->instptr->format); j++)
-        {
-            printf("%X", listptr->instptr->objcode[j]); /* I'm thinking we should change objcode to an unsigned integer, it will help with printing */
-        }
+        listptr->instptr->operand[9] = '\0';
+		printf("%s ", listptr->instptr->operand);
+        
+//        for(j=0; j<(listptr->instptr->format); j++)
+//        {
+//            printf("%X", listptr->instptr->objcode[j]); /* I'm thinking we should change objcode to an unsigned integer, it will help with printing */
+//        }
         
         //printf("%06X  ", listptr->instptr->objcode);
         

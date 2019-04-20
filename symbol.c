@@ -241,6 +241,30 @@ char *GetSymbolName(int value)
 } /* End of function Get_Symbol_Name */
 
 /*************************************************************
+ function: NextSymbolAddress
+ Notes: When given a value, this function will search SYMTAB
+   and return value of the next symbol in SYMTAB.
+ I/O: input paramaters: value of potential symbol
+      output: returns value of next
+ *************************************************************/
+int NextSymbolAddress(int value)
+{
+    int index = 0;
+    while(SYMTAB[index] != NULL)
+    {
+        if(value == SYMTAB[index]->value)
+        {
+            if (SYMTAB[index + 1] != NULL)
+                return SYMTAB[index + 1]->value;
+            else
+                return -1;
+        }
+        index++;
+    }
+    return -1;
+} /* End of function Next_Symbol_Address */
+
+/*************************************************************
  function: GetLiteral
  Notes: When given a value, this function will search LITTAB
     and return Literal* of the appropriate literal name. If no

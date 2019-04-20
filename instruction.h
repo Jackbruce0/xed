@@ -67,6 +67,7 @@ unsigned char ByteToHalfByte(unsigned char curbyte,
 void BinaryPrint(unsigned char curbyte);
 Instruction* OpcodeCopy(unsigned char curbyte, 
 									Instruction* instptr);
+link InsertRESDirectives(link HEAD, int LOCCTR, int nextaddr);
 #endif /* instruction_h */
 
 /*******************[ EOF: instruction.h ]********************/

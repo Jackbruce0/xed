@@ -134,12 +134,19 @@ int main(int argc, const char * argv[])
     /******** END OF STEP 1 *******/
 	
 	/*********** STEP 2 ***********/
+    int LOCCTR = 0;
+    int nextaddr = 0; /* address of next instruction */
 	link head = NULL;
 	for(textnx=0; textnx<GetTcount(); textnx++)
 	{
+        LOCCTR = T[textnx]->startadr;
+        if(textnx + 1 < GetTcount())
+            nextaddr = T[textnx + 1]->startadr;
 		head=FormatCall(T[textnx]->reclength,
 						T[textnx]->inst, head,
-						T[textnx]->startadr);
+						LOCCTR);
+        LOCCTR += T[textnx]->reclength;
+        head = InsertRESDirectives(head, LOCCTR, nextaddr);
 	}
 	/******** END OF STEP 2 *******/
     

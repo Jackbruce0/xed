@@ -36,7 +36,8 @@ link FormatCall(unsigned int reclength,
         
         //Initialize your variables jake!
         instptr->startadr = 0;
-        instptr->operand[0] = ' ';
+        strncpy(instptr->operand, "         \0", 10);
+        
         
 		curbyte = inst[i];
 		strncpy(instptr->label, GetSymbolName(locctr), 7);
@@ -235,6 +236,51 @@ link FormatCall(unsigned int reclength,
 		head = Add(head, instptr);
     }
 	return head;
+}
+
+/*************************************************************
+ function: InsertRESDirectives
+ Notes: Compare current address with address of next
+    instruction or symbol to determine if a RESB or RESW
+    directive should inserted
+ I/O: input paramaters: LOCCTR and nextaddr (Address of next
+        instruction)
+      output: void
+ *************************************************************/
+link InsertRESDirectives(link HEAD, int LOCCTR, int nextaddr)
+{
+    while(LOCCTR < nextaddr)
+    {
+        int size = 0, nextsymaddr = 0;
+        Instruction *RES = malloc(sizeof(Instruction));
+        RES->objcode[0] = ' ';
+        RES->objcode[1] = ' ';
+        RES->objcode[2] = ' ';
+        RES->objcode[3] = '\0';
+        RES->startadr = LOCCTR;
+        strncpy(RES->label, GetSymbolName(LOCCTR), 7);
+        nextsymaddr = NextSymbolAddress(LOCCTR);
+        if(nextaddr > nextsymaddr)
+        {
+            size = nextsymaddr - LOCCTR;
+            LOCCTR = nextsymaddr;
+        } else
+        {
+            size = nextaddr - LOCCTR;
+            LOCCTR = nextaddr;
+        }
+        if(size % 3 == 0)
+        {
+            strncpy(RES->opname, " RESW  \0", 8);
+            sprintf(RES->operand, " %d", size/3);
+        }else
+        {
+            strncpy(RES->opname, " RESB  \0", 8);
+            sprintf(RES->operand, " %d", size);
+        }
+        HEAD = Add(HEAD, RES);
+    }
+    return HEAD;
 }
 
 /*************************************************************

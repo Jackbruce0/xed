@@ -12,6 +12,7 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <stdlib.h>
 
 int CharToNum(unsigned int dest, unsigned char input,
               int pos, int size);
