@@ -27,7 +27,7 @@ link FormatCall(unsigned int reclength,
 				unsigned int locctr)
 {
     unsigned char curbyte;
-    int i, basevalue = 0;
+    int i, j, basevalue = 0;
 	enum boolean baseflag = false;
 	
     for(i=0; i<reclength; i++)
@@ -90,6 +90,17 @@ link FormatCall(unsigned int reclength,
 			unsigned char r2 = ByteToHalfByte(inst[i+1], 0);
 			BinaryPrint(inst[i]);
 			BinaryPrint(inst[i+1]);
+			strncpy(instptr->operand+1, RegisterTab(r1), 2);
+			if(NumOfRegisters(curbyte)==1)//check if instruction needs 2nd register
+			{
+				strncpy(instptr->operand+1+strlen(RegisterTab(r1)), ",", 1);
+				strncpy(instptr->operand+2+strlen(RegisterTab(r1)), RegisterTab(r2), 2);
+			}
+			for(j=2; j<8; j++)/*Fills in extra space*/
+			{
+				if(instptr->operand[j]<44)
+					instptr->operand[j]=' ';
+			}
 			printf("				r1 %01X,	r2 %01X", r1, r2);
 			locctr+=2;
 			instptr->format=2;
@@ -123,6 +134,10 @@ link FormatCall(unsigned int reclength,
 				if(xflag==true)
 				{
 					strncpy(instptr->operand+(strlen(GetSymbolName(targetaddress))+1), ",X", 2);
+				}
+				else
+				{
+					strncpy(instptr->operand+(strlen(GetSymbolName(targetaddress))+1), "  ", 2);
 				}
 				printf("			x %1d	target	%05X", xflag, targetaddress);
 				locctr+=3;
@@ -220,6 +235,10 @@ link FormatCall(unsigned int reclength,
 					{
 						strncpy(instptr->operand+(strlen(GetSymbolName(targetaddress))+1), ",X", 2);
 					}
+					else
+					{
+						strncpy(instptr->operand+(strlen(GetSymbolName(targetaddress))+1), "  ", 2);
+					}
 					printf("			x %1d	TA  	%06X   %s", xflag, targetaddress, addressingmode);
 					locctr+=3;
 					instptr->format=3;
@@ -266,6 +285,10 @@ link FormatCall(unsigned int reclength,
 					if(xflag==true)
 					{
 						strncpy(instptr->operand+(strlen(GetSymbolName(address))+1), ",X", 2);
+					}
+					else
+					{
+						strncpy(instptr->operand+(strlen(GetSymbolName(address))+1), "  ", 2);
 					}
 					printf("	x %1d	adrs	%05X  %s", xflag, address, addressingmode);
 					locctr+=4;

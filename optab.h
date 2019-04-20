@@ -34,5 +34,7 @@ typedef struct Op
 /**prototypes**/
 int SicInstCheck(unsigned char curbyte);
 char* SicInstMnemonic(unsigned char curbyte);
+char* RegisterTab(unsigned int regnum);
+int NumOfRegisters(unsigned char curbyte);
 
 /*******************[ EOF: optab.h ]********************/
