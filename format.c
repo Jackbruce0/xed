@@ -11,11 +11,12 @@
 #include "instruction.h"
 #include "optab.h"
 #include "symbol.h"
+#include "xedlib.h"
 
 enum boolean {false, true};
 
 /*************************************************************
- function: FormatCall(!NEEDS CLEANING!)
+ function: FormatCall
  Notes: Fills Instruction struct linked list
  I/O: input paramaters: reclength of Text Record,inst
 						array holding contents, and head.
@@ -27,7 +28,7 @@ link FormatCall(unsigned int reclength,
 				unsigned int locctr)
 {
     unsigned char curbyte;
-    int i, j, basevalue = 0;
+    int i, basevalue = 0;
 	enum boolean baseflag = false;
 	
     for(i=0; i<reclength; i++)
@@ -56,242 +57,343 @@ link FormatCall(unsigned int reclength,
 /**************FORMAT 1**************/
 		if(SicInstCheck(curbyte)==1)
 		{
+			//Debugging Prints
 			printf("Format 1: %6s ", 
-							SicInstMnemonic(curbyte));
-			instptr->startadr=locctr;
-			instptr->opname[0]=' ';
-			instptr = OpcodeCopy(curbyte, instptr);
+					SicInstMnemonic(curbyte));
 			BinaryPrint(inst[i]);
+			//
+			instptr = Format1(instptr, curbyte,
+						locctr, i, inst);
 			locctr++;
-			instptr->format=1;
-			instptr->objcode[0] = inst[i];
 		}
 /**************FORMAT 2**************/
 		else if(SicInstCheck(curbyte)==2)
 		{
-			printf("Format 2: %6s ", SicInstMnemonic(curbyte));
-			instptr->startadr=locctr;
-			instptr->opname[0]=' ';
-			instptr = OpcodeCopy(curbyte, instptr);
-			unsigned char r1 = ByteToHalfByte(inst[i+1], 1);
-			unsigned char r2 = ByteToHalfByte(inst[i+1], 0);
+			//Debugging Prints
+			printf("Format 2: %6s ",
+					SicInstMnemonic(curbyte));
 			BinaryPrint(inst[i]);
 			BinaryPrint(inst[i+1]);
-			strncpy(instptr->operand+1, RegisterTab(r1), 2);
-			if(NumOfRegisters(curbyte)==1)//check if instruction needs 2nd register
-			{
-				strncpy(instptr->operand+1+strlen(RegisterTab(r1)), ",", 1);
-				strncpy(instptr->operand+2+strlen(RegisterTab(r1)), RegisterTab(r2), 2);
-			}
-			for(j=2; j<8; j++)/*Fills in extra space*/
-			{
-				if(instptr->operand[j]<44)
-					instptr->operand[j]=' ';
-			}
-			printf("				r1 %01X,	r2 %01X", r1, r2);
+			//
+			instptr = Format2(instptr, curbyte,
+						locctr, i, inst);
 			locctr+=2;
-			instptr->format=2;
-			instptr->objcode[0] = inst[i];
-			instptr->objcode[1] = inst[i+1];
 			i++;
 		}
-/****************FORMAT 0/3/4*****************/
+/****************FORMAT 0*****************/
+		else if( Bit(curbyte,1)==0 && Bit(curbyte,0)==0 )
+		{
+			//Debugging Prints
+			printf("Format 0: %6s ",
+					SicInstMnemonic(curbyte));
+			BinaryPrint(inst[i]);
+			BinaryPrint(inst[i+1]);
+			BinaryPrint(inst[i+2]);
+			//
+			instptr = Format0(instptr, curbyte,
+						locctr, i, inst);
+			locctr+=3;
+			i+=2;
+		}
+/******************FORMAT 3********************/
+		else if(Bit(inst[i+1],4)==0)
+		{
+			//Debugging Prints
+			printf("Format 3: %6s ",
+					SicInstMnemonic(curbyte));
+			BinaryPrint(inst[i]);
+			BinaryPrint(inst[i+1]);
+			BinaryPrint(inst[i+2]);
+			//
+			if(Bit(inst[i+1],5)==1)/*Base Directive Check*/
+			{
+				/*
+				if(baseflag==true)
+				{
+					Instruction* instptrbase = malloc(sizeof(Instruction));
+					instptrbase->format = -1;
+					instptrbase->startadr=locctr;
+					istrncpy(instptrbase->label, "      \0", 7);
+					strncpy(instptrbase->opname, " NOBASE\0",9);
+					strncpy(instptrbase->operand, "      \0", 7);
+					head = Add(head, instptrbase);
+					baseflag=false;
+				}
+				*/
+			}
+			else if(Bit(inst[i+1],6)==1)
+			{
+				if(baseflag==false)
+				{
+					basevalue = locctr;
+					Instruction* instptrbase = malloc(sizeof(Instruction));
+					instptrbase->format = -1;
+					instptrbase->startadr=locctr;
+					strncpy(instptrbase->label, "      \0", 7);
+					strncpy(instptrbase->opname, " BASE \0",8);
+					strncpy(instptrbase->operand, "      \0", 7);
+					head = Add(head, instptrbase);
+					baseflag=true;
+				}
+			}
+			instptr = Format3(instptr, curbyte,
+						locctr, i, inst, basevalue);
+			locctr+=3;
+			i+=2;
+		}
+/*****************FORMAT 4********************/
 		else
 		{
-			/*check right-most bits of first 
-			byte so see if format 0*/
-/*****************FORMAT 0******************/
-			if( Bit(curbyte,1)==0 && Bit(curbyte,0)==0 )
-			{
-				printf("Format 0: %6s ", SicInstMnemonic(curbyte));
-				instptr->startadr=locctr;
-				instptr->opname[0]=' ';
-				instptr = OpcodeCopy(curbyte, instptr);
-				unsigned int disp1 = (Bit(inst[i+1],6)<<14) + (Bit(inst[i+1],5)<<13) + (Bit(inst[i+1],4)<<12);
-				unsigned int disp2 = ByteToHalfByte(inst[i+1], 0) << 8;
-				unsigned char disp3 = inst[i+2];
-				enum boolean xflag=false;
-				if(Bit(inst[i+1],7)==1)
-					xflag=true;
-				BinaryPrint(inst[i]);
-				BinaryPrint(inst[i+1]);
-				BinaryPrint(inst[i+2]);
-				unsigned int targetaddress = disp1 + disp2 + disp3;
-				strncpy(instptr->operand+1, GetSymbolName(targetaddress), 7);
-				if(xflag==true)
-				{
-					strncpy(instptr->operand+(strlen(GetSymbolName(targetaddress))+1), ",X", 2);
-				}
-				else
-				{
-					strncpy(instptr->operand+(strlen(GetSymbolName(targetaddress))+1), "  ", 2);
-				}
-				printf("			x %1d	target	%05X", xflag, targetaddress);
-				locctr+=3;
-				instptr->format=3;
-				instptr->objcode[0] = inst[i];
-				instptr->objcode[1] = inst[i+1];
-				instptr->objcode[2] = inst[i+2];
-				i+=2;
-			}
-			//have a method to grab 2nd byte to check if format 3 or 4
-/******************FORMAT 3********************/
-			else
-			{
-				if(Bit(inst[i+1],4)==0)
-				{
-					unsigned int targetaddress;
-					printf("Format 3: %6s ", SicInstMnemonic(curbyte));
-					instptr->startadr=locctr;
-					instptr->opname[0]=' ';
-					instptr = OpcodeCopy(curbyte, instptr);
-					int disp1 = ByteToHalfByte(inst[i+1], 0) << 8;
-					int disp2 = inst[i+2];
-					int disp = disp1 + disp2;
-					if(Bit(ByteToHalfByte(inst[i+1],0),3)==1)
-					{
-						disp=-(0x1000-disp);
-					}
-					enum boolean xflag=false;
-					char* addressingmode;
-					if(Bit(inst[i+1],7)==1)
-						xflag=true;
-					if(Bit(curbyte,1)==1&&Bit(curbyte,0)==0)
-					{
-						//addressingmode = "Indirect";
-						instptr->operand[0]='@';
-					}
-					else if(Bit(curbyte,1)==0&&Bit(curbyte,0)==1)
-					{
-						//addressingmode = "Immediate";
-						instptr->operand[0]='#';
-					}
-					else
-					{
-						instptr->operand[0]=' ';
-					}
-					if(Bit(inst[i+1],5)==1)
-					{
-						addressingmode = "PC Relative";
-						targetaddress = disp + locctr + 3;
-						/*
-						if(baseflag==true)
-						{
-							Instruction* instptrbase = malloc(sizeof(Instruction));
-							instptrbase->startadr=locctr;
-							instptrbase->opname[0] = ' ';
-							instptrbase->opname[1] = 'N';
-							instptrbase->opname[2] = 'O';
-							instptrbase->opname[3] = 'B';
-							instptrbase->opname[4] = 'A';
-							instptrbase->opname[5] = 'S';
-							instptrbase->opname[6] = 'E';
-							instptrbase->opname[7] = '\0';
-							head = Add(head, instptrbase);
-							baseflag=false;
-						}
-						*/
-					}
-					else if(Bit(inst[i+1],6)==1)
-					{
-						addressingmode = "Base Relative";
-						if(baseflag==false)
-						{
-							basevalue = locctr;
-							Instruction* instptrbase = malloc(sizeof(Instruction));
-                            instptrbase->format = -1;
-							instptrbase->startadr=locctr;
-							strncpy(instptrbase->label, "      \0", 7);
-							strncpy(instptrbase->opname, " BASE \0",8);
-                            strncpy(instptrbase->operand, "      \0", 7);
-							head = Add(head, instptrbase);
-							baseflag=true;
-						}
-						targetaddress = disp + basevalue;
-					}
-					else
-					{
-						addressingmode = "Direct";
-						targetaddress = disp;
-					}
-					BinaryPrint(inst[i]);
-					BinaryPrint(inst[i+1]);
-					BinaryPrint(inst[i+2]);
-					strncpy(instptr->operand+1, GetSymbolName(targetaddress), 7);
-					if(xflag==true)
-					{
-						strncpy(instptr->operand+(strlen(GetSymbolName(targetaddress))+1), ",X", 2);
-					}
-					else
-					{
-						strncpy(instptr->operand+(strlen(GetSymbolName(targetaddress))+1), "  ", 2);
-					}
-					printf("			x %1d	TA  	%06X   %s", xflag, targetaddress, addressingmode);
-					locctr+=3;
-					instptr->format=3;
-					instptr->objcode[0] = inst[i];
-					instptr->objcode[1] = inst[i+1];
-					instptr->objcode[2] = inst[i+2];
-					i+=2;
-				}
-/*****************FORMAT 4********************/
-				else
-				{
-					printf("Format 4: %6s ", SicInstMnemonic(curbyte));
-					instptr->startadr=locctr;
-					instptr->opname[0]='+';
-					instptr = OpcodeCopy(curbyte, instptr);
-					unsigned int address1 = ByteToHalfByte(inst[i+1], 0) << 16;
-					unsigned int address2 = inst[i+2] << 8;
-					unsigned char address3 = inst[i+3];
-					enum boolean xflag=false;
-					char* addressingmode;
-					if(Bit(inst[i+1],7)==1)
-						xflag=true;
-					if(Bit(curbyte,1)==1&&Bit(curbyte,0)==0)
-					{
-						addressingmode = "Indirect";
-						instptr->operand[0]='@';
-					}
-					else if(Bit(curbyte,1)==0&&Bit(curbyte,0)==1)
-					{
-						addressingmode = "Immediate";
-						instptr->operand[0]='#';
-					}
-					else
-					{
-						instptr->operand[0]=' ';
-						addressingmode = "Direct";
-					}
-					BinaryPrint(inst[i]);
-					BinaryPrint(inst[i+1]);
-					BinaryPrint(inst[i+2]);
-					BinaryPrint(inst[i+3]);
-					unsigned int address = address1 + address2 + address3;
-					strncpy(instptr->operand+1, GetSymbolName(address), 7);
-					if(xflag==true)
-					{
-						strncpy(instptr->operand+(strlen(GetSymbolName(address))+1), ",X", 2);
-					}
-					else
-					{
-						strncpy(instptr->operand+(strlen(GetSymbolName(address))+1), "  ", 2);
-					}
-					printf("	x %1d	adrs	%05X  %s", xflag, address, addressingmode);
-					locctr+=4;
-					instptr->format=4;
-					instptr->objcode[0] = inst[i];
-					instptr->objcode[1] = inst[i+1];
-					instptr->objcode[2] = inst[i+2];
-					instptr->objcode[3] = inst[i+3];
-					i+=3;
-				}
-			}
+			//Debugging Prints
+			printf("Format 4: %6s ",
+					SicInstMnemonic(curbyte));
+			BinaryPrint(inst[i]);
+			BinaryPrint(inst[i+1]);
+			BinaryPrint(inst[i+2]);
+			BinaryPrint(inst[i+3]);
+			//
+			instptr = Format4(instptr, curbyte,
+						locctr, i, inst);
+			locctr+=4;
+			i+=3;
 		}
 		printf("\n");
 		head = Add(head, instptr);
     }
 	return head;
+}
+
+/*************************************************************
+ function: Format1
+ Notes: Fills instptr with Format 1 instruction
+ I/O: input paramaters: Current instptr, current byte of the
+		data, the locctr, the i index of the text record data,
+		and the text record data.
+      output: Returns the filled instptr
+ *************************************************************/
+
+Instruction* Format1(Instruction* instptr,
+				unsigned char curbyte, unsigned int locctr,
+				int i, unsigned char inst[30])
+{
+	instptr->startadr=locctr;
+	instptr->opname[0]=' ';
+	instptr = OpcodeCopy(curbyte, instptr);
+	instptr->format=1;
+	instptr->objcode[0] = inst[i];
+	return instptr;
+}
+
+/*************************************************************
+ function: Format2
+ Notes: Fills instptr with Format 2 instruction
+ I/O: input paramaters: Current instptr, current byte of the
+		data, the locctr, the i index of the text record data,
+		and the text record data.
+      output: Returns the filled instptr 
+ *************************************************************/
+
+Instruction* Format2(Instruction* instptr,
+				unsigned char curbyte, unsigned int locctr,
+				int i, unsigned char inst[30])
+{
+	instptr->startadr=locctr;
+	instptr->opname[0]=' ';
+	instptr = OpcodeCopy(curbyte, instptr);
+	unsigned char r1 = ByteToHalfByte(inst[i+1], 1);
+	unsigned char r2 = ByteToHalfByte(inst[i+1], 0);
+	strncpy(instptr->operand+1, RegisterTab(r1), 2);
+	if(NumOfRegisters(curbyte)==1)//check if instruction needs 2nd register
+	{
+		strncpy(instptr->operand+1+strlen(RegisterTab(r1)), ",", 1);
+		strncpy(instptr->operand+2+strlen(RegisterTab(r1)), RegisterTab(r2), 2);
+	}
+	int j;
+	for(j=2; j<8; j++)/*Fills in extra space*/
+	{
+		if(instptr->operand[j]<44)
+			instptr->operand[j]=' ';
+	}
+	printf("				r1 %01X,	r2 %01X", r1, r2);//Debugger
+	instptr->format=2;
+	instptr->objcode[0] = inst[i];
+	instptr->objcode[1] = inst[i+1];
+	return instptr;
+}
+
+/*************************************************************
+ function: Format0
+ Notes: Fills instptr with Format 0 instruction
+  I/O: input paramaters: Current instptr, current byte of the
+		data, the locctr, the i index of the text record data,
+		and the text record data.
+      output: Returns the filled instptr
+ *************************************************************/
+
+Instruction* Format0(Instruction* instptr,
+				unsigned char curbyte, unsigned int locctr,
+				int i, unsigned char inst[30])
+{
+	instptr->startadr=locctr;
+	instptr->opname[0]=' ';
+	instptr = OpcodeCopy(curbyte, instptr);
+	unsigned int disp1 = (Bit(inst[i+1],6)<<14) + (Bit(inst[i+1],5)<<13) + (Bit(inst[i+1],4)<<12);
+	unsigned int disp2 = ByteToHalfByte(inst[i+1], 0) << 8;
+	unsigned char disp3 = inst[i+2];
+	enum boolean xflag=false;
+	if(Bit(inst[i+1],7)==1)
+		xflag=true;
+	unsigned int targetaddress = disp1 + disp2 + disp3;
+	strncpy(instptr->operand+1, GetSymbolName(targetaddress), 7);
+	if(xflag==true)
+	{
+		strncpy(instptr->operand+(strlen(GetSymbolName(targetaddress))+1), ",X", 2);
+	}
+	else
+	{
+		strncpy(instptr->operand+(strlen(GetSymbolName(targetaddress))+1), "  ", 2);
+	}
+	printf("			x %1d	target	%05X", xflag, targetaddress);//Debugger
+	instptr->format=3;
+	instptr->objcode[0] = inst[i];
+	instptr->objcode[1] = inst[i+1];
+	instptr->objcode[2] = inst[i+2];
+	return instptr;
+}
+
+/*************************************************************
+ function: Format3
+ Notes: Fills instptr with Format 3 instruction
+  I/O: input paramaters: Current instptr, current byte of the
+		data, the locctr, the i index of the text record data,
+		the text record data, and the saved basevalue.
+      output: Returns the filled instptr
+ *************************************************************/
+
+Instruction* Format3(Instruction* instptr,
+				unsigned char curbyte, unsigned int locctr,
+				int i, unsigned char inst[30], int basevalue)
+{
+	unsigned int targetaddress;
+	instptr->startadr=locctr;
+	instptr->opname[0]=' ';
+	instptr = OpcodeCopy(curbyte, instptr);
+	int disp1 = ByteToHalfByte(inst[i+1], 0) << 8;
+	int disp2 = inst[i+2];
+	int disp = disp1 + disp2;
+	if(Bit(ByteToHalfByte(inst[i+1],0),3)==1)
+	{
+		disp=-(0x1000-disp);/*Makes disp negative*/
+	}
+	enum boolean xflag=false;
+	char* addressingmode;
+	if(Bit(inst[i+1],7)==1)/*Indexed addressing check*/
+		xflag=true;
+		
+	/*Indirect or Immediate check*/
+	if(Bit(curbyte,1)==1&&Bit(curbyte,0)==0)
+	{
+		//addressingmode = "Indirect";
+		instptr->operand[0]='@';
+	}
+	else if(Bit(curbyte,1)==0&&Bit(curbyte,0)==1)
+	{
+		//addressingmode = "Immediate";
+		instptr->operand[0]='#';
+	}
+	else
+	{
+		instptr->operand[0]=' ';
+	}
+	
+	if(Bit(inst[i+1],5)==1)/*Addressing mode check*/
+	{
+		addressingmode = "PC Relative";
+		targetaddress = disp + locctr + 3;
+	}
+	else if(Bit(inst[i+1],6)==1)
+	{
+		addressingmode = "Base Relative";
+		targetaddress = disp + basevalue;
+	}
+	else
+	{
+		addressingmode = "Direct";
+		targetaddress = disp;
+	}
+	
+	strncpy(instptr->operand+1, GetSymbolName(targetaddress), 7);
+	if(xflag==true)
+	{
+		strncpy(instptr->operand+(strlen(GetSymbolName(targetaddress))+1), ",X", 2);
+	}
+	else
+	{
+		strncpy(instptr->operand+(strlen(GetSymbolName(targetaddress))+1), "  ", 2);
+	}
+	instptr->format=3;
+	instptr->objcode[0] = inst[i];
+	instptr->objcode[1] = inst[i+1];
+	instptr->objcode[2] = inst[i+2];
+	printf("			x %1d	TA  	%06X   %s", xflag, targetaddress, addressingmode);//Debugger
+	return instptr;
+}
+
+/*************************************************************
+ function: Format4
+ Notes: Fills instptr with Format 4 instruction
+  I/O: input paramaters: Current instptr, current byte of the
+		data, the locctr, the i index of the text record data,
+		and the text record data.
+      output: Returns the filled instptr
+ *************************************************************/
+
+Instruction* Format4(Instruction* instptr,
+				unsigned char curbyte, unsigned int locctr,
+				int i, unsigned char inst[30])
+{
+	instptr->startadr=locctr;
+	instptr->opname[0]='+';
+	instptr = OpcodeCopy(curbyte, instptr);
+	unsigned int address1 = ByteToHalfByte(inst[i+1], 0) << 16;
+	unsigned int address2 = inst[i+2] << 8;
+	unsigned char address3 = inst[i+3];
+	enum boolean xflag=false;
+	char* addressingmode;
+	if(Bit(inst[i+1],7)==1)
+		xflag=true;
+	if(Bit(curbyte,1)==1&&Bit(curbyte,0)==0)
+	{
+		addressingmode = "Indirect";
+		instptr->operand[0]='@';
+	}
+	else if(Bit(curbyte,1)==0&&Bit(curbyte,0)==1)
+	{
+		addressingmode = "Immediate";
+		instptr->operand[0]='#';
+	}
+	else
+	{
+		instptr->operand[0]=' ';
+		addressingmode = "Direct";
+	}
+	unsigned int address = address1 + address2 + address3;
+	strncpy(instptr->operand+1, GetSymbolName(address), 7);
+	if(xflag==true)
+	{
+		strncpy(instptr->operand+(strlen(GetSymbolName(address))+1), ",X", 2);
+	}
+	else
+	{
+		strncpy(instptr->operand+(strlen(GetSymbolName(address))+1), "  ", 2);
+	}
+	instptr->format=4;
+	instptr->objcode[0] = inst[i];
+	instptr->objcode[1] = inst[i+1];
+	instptr->objcode[2] = inst[i+2];
+	instptr->objcode[3] = inst[i+3];
+	printf("	x %1d	adrs	%05X  %s", xflag, address, addressingmode);//Debugger
+	return instptr;
 }
 
 /*************************************************************
@@ -366,112 +468,6 @@ Instruction *InsertLiteral(Literal *lit,
     }
     return instptr;
 } /* End of function Insert_Literal */
-
-/*************************************************************
- function: Bit
- Notes: Takes a byte of data and an index to return that given
-	bit within the byte.
- I/O: input paramaters: A byte and an index
-      output: A bit within the byte, either 0 or 1.
- *************************************************************/
-
-int Bit(unsigned char curbyte, int bytenx)
-{
-    curbyte >>= bytenx;
-    int bitval = curbyte & 1;
-    return bitval;
-}
-
-/*************************************************************
- function: AsciiToHex(Debugger)
- Notes: This takes in two ascii characters from the .obj file
-	and compresses them into 1 byte of data.
- I/O: input paramaters: Two ascii characters read from the
-	.obj file.
-      output: 1 byte of data
- *************************************************************/
-
-unsigned char AsciiToHex(unsigned char c1, unsigned char c2)
-{
-	//c1
-	if('0' <= c1 && c1 <= '9')
-	{
-		c1-='0';
-		c1<<=4;
-	}
-	else if('a' <= c1 && c1 <= 'f')
-	{
-		c1=c1+10-'a';
-		c1<<=4;
-	}
-	else if('A' <= c1 && c1 <= 'F')
-	{
-		c1=c1+10-'A';
-		c1<<=4;
-	}
-	else
-	{
-		printf("Non-hex value in the text record.\n");
-		exit(1);
-	}
-	
-	//c2
-	if('0' <= c2 && c2 <= '9')
-		c2-='0';
-	else if('a' <= c2 && c2 <= 'f')
-		c2=c2+10-'a';
-	else if('A' <= c2 && c2 <= 'F')
-		c2=c2+10-'A';
-	else
-	{
-		printf("Non-hex value in the text record.\n");
-		exit(1);
-	}
-	
-	return c1+c2;
-}
-
-/*************************************************************
- function: ByteToHalfByte
- Notes: Takes a byte of data and an index for what half of the
-	byte to return.
- I/O: input paramaters: A byte and an index, NX=0 or 1
-      output: A single hex value as a half-byte
- *************************************************************/
-
- unsigned char ByteToHalfByte(unsigned char curbyte,
-											int halfnx){
-	unsigned char value;
-	if(halfnx == 1)
-		return value = (Bit(curbyte,7)*8 + Bit(curbyte,6)*4
-	+ Bit(curbyte,5)*2 + Bit(curbyte,4));
-	else
-		return value = (Bit(curbyte,3)*8 + Bit(curbyte,2)*4
-	+ Bit(curbyte,1)*2 + Bit(curbyte,0));
- }
- 
-/*************************************************************
- function: BinaryPrint(Debugger)
- Notes: Used for debugging purposes to print out the binary
-	representation of a byte to confirm it's working as
-	intended and to identify which bit is the bit to check.
- I/O: input paramaters: A byte of data
-      output: Binary representation on terminal.
- *************************************************************/
-
-void BinaryPrint(unsigned char curbyte)
-{
-	int j, bitval, ctr=0;
-    for(j=7;j>=0;j--){
-		bitval = Bit(curbyte, j);
-        printf("%d", bitval);
-        ctr++;
-        if(ctr==4){
-            printf(" ");
-            ctr=0;
-        }
-    }
-}
 
 /*************************************************************
  function: OpcodeCopy

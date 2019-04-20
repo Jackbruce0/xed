@@ -67,4 +67,109 @@ char *SplitString(char *str, int startNX, int endNX)
     return substr;
 } /* End of function Split_String */
 
+/*************************************************************
+ function: Bit
+ Notes: Takes a byte of data and an index to return that given
+	bit within the byte.
+ I/O: input paramaters: A byte and an index
+      output: A bit within the byte, either 0 or 1.
+ *************************************************************/
+
+int Bit(unsigned char curbyte, int bytenx)
+{
+    curbyte >>= bytenx;
+    int bitval = curbyte & 1;
+    return bitval;
+}
+
+/*************************************************************
+ function: AsciiToHex(Debugger)
+ Notes: This takes in two ascii characters from the .obj file
+	and compresses them into 1 byte of data.
+ I/O: input paramaters: Two ascii characters read from the
+	.obj file.
+      output: 1 byte of data
+ *************************************************************/
+
+unsigned char AsciiToHex(unsigned char c1, unsigned char c2)
+{
+	//c1
+	if('0' <= c1 && c1 <= '9')
+	{
+		c1-='0';
+		c1<<=4;
+	}
+	else if('a' <= c1 && c1 <= 'f')
+	{
+		c1=c1+10-'a';
+		c1<<=4;
+	}
+	else if('A' <= c1 && c1 <= 'F')
+	{
+		c1=c1+10-'A';
+		c1<<=4;
+	}
+	else
+	{
+		printf("Non-hex value in the text record.\n");
+		exit(1);
+	}
+	
+	//c2
+	if('0' <= c2 && c2 <= '9')
+		c2-='0';
+	else if('a' <= c2 && c2 <= 'f')
+		c2=c2+10-'a';
+	else if('A' <= c2 && c2 <= 'F')
+		c2=c2+10-'A';
+	else
+	{
+		printf("Non-hex value in the text record.\n");
+		exit(1);
+	}
+	
+	return c1+c2;
+}
+
+/*************************************************************
+ function: ByteToHalfByte
+ Notes: Takes a byte of data and an index for what half of the
+	byte to return.
+ I/O: input paramaters: A byte and an index, NX=0 or 1
+      output: A single hex value as a half-byte
+ *************************************************************/
+
+ unsigned char ByteToHalfByte(unsigned char curbyte,
+											int halfnx){
+	unsigned char value;
+	if(halfnx == 1)
+		return value = (Bit(curbyte,7)*8 + Bit(curbyte,6)*4
+	+ Bit(curbyte,5)*2 + Bit(curbyte,4));
+	else
+		return value = (Bit(curbyte,3)*8 + Bit(curbyte,2)*4
+	+ Bit(curbyte,1)*2 + Bit(curbyte,0));
+ }
+ 
+/*************************************************************
+ function: BinaryPrint(Debugger)
+ Notes: Used for debugging purposes to print out the binary
+	representation of a byte to confirm it's working as
+	intended and to identify which bit is the bit to check.
+ I/O: input paramaters: A byte of data
+      output: Binary representation on terminal.
+ *************************************************************/
+
+void BinaryPrint(unsigned char curbyte)
+{
+	int j, bitval, ctr=0;
+    for(j=7;j>=0;j--){
+		bitval = Bit(curbyte, j);
+        printf("%d", bitval);
+        ctr++;
+        if(ctr==4){
+            printf(" ");
+            ctr=0;
+        }
+    }
+}
 /**********************[ EOF: xedlib.h ]**********************/

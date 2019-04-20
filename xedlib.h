@@ -19,6 +19,15 @@ int CharToNum(unsigned int dest, unsigned char input,
 
 char *SplitString(char *str, int startNX, int endNX);
 
+int Bit(unsigned char curbyte, int bytenx);
+
+unsigned char AsciiToHex(unsigned char c1, unsigned char c2);
+
+unsigned char ByteToHalfByte(unsigned char curbyte, 
+											int halfnx);
+											
+void BinaryPrint(unsigned char curbyte);
+
 #endif /* xedlib_h */
 
 /**********************[ EOF: xedlib.h ]**********************/

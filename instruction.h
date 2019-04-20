@@ -62,11 +62,27 @@ void FreeList(link head);
 link FormatCall(unsigned int reclength, 
 				unsigned char inst[30], link head,
 				unsigned int locctr);
-int Bit(unsigned char curbyte, int bytenx);
-unsigned char AsciiToHex(unsigned char c1, unsigned char c2);
-unsigned char ByteToHalfByte(unsigned char curbyte, 
-											int halfnx);
-void BinaryPrint(unsigned char curbyte);
+				
+Instruction* Format1(Instruction* instptr,
+				unsigned char curbyte, unsigned int locctr,
+				int i, unsigned char inst[30]);
+				
+Instruction* Format2(Instruction* instptr,
+				unsigned char curbyte, unsigned int locctr,
+				int i, unsigned char inst[30]);
+				
+Instruction* Format0(Instruction* instptr,
+				unsigned char curbyte, unsigned int locctr,
+				int i, unsigned char inst[30]);
+				
+Instruction* Format3(Instruction* instptr,
+				unsigned char curbyte, unsigned int locctr,
+				int i, unsigned char inst[30], int basevalue);
+				
+Instruction* Format4(Instruction* instptr,
+				unsigned char curbyte, unsigned int locctr,
+				int i, unsigned char inst[30]);
+				
 Instruction* OpcodeCopy(unsigned char curbyte, 
 									Instruction* instptr);
 link InsertRESDirectives(link HEAD, int LOCCTR, int nextaddr);
