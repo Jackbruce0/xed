@@ -93,8 +93,9 @@ link FormatCall(unsigned int reclength,
 				BinaryPrint(inst[i]);
 				BinaryPrint(inst[i+1]);
 				BinaryPrint(inst[i+2]);
-				unsigned int disp = disp1 + disp2 + disp3;
-				printf("			x %1d	disp	%03X", xflag, disp);
+				unsigned int targetaddress = disp1 + disp2 + disp3;
+				strncpy(instptr->operand+1, GetSymbolName(targetaddress), 7);
+				printf("			x %1d	target	%05X", xflag, targetaddress);
 				locctr+=3;
 				instptr->format=3;
 				instptr->objcode[0] = inst[i];
