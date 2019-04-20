@@ -27,7 +27,7 @@ link FormatCall(unsigned int reclength,
 				unsigned int locctr)
 {
     unsigned char curbyte, c1, c2;
-    int i, basevalue;
+    int i, j, basevalue;
 	enum boolean baseflag = false;
 	
     for(i=0; i<reclength; i++)
@@ -65,6 +65,17 @@ link FormatCall(unsigned int reclength,
 			unsigned char r2 = ByteToHalfByte(inst[i+1], 0);
 			BinaryPrint(inst[i]);
 			BinaryPrint(inst[i+1]);
+			strncpy(instptr->operand+1, RegisterTab(r1), 2);
+			if(NumOfRegisters(curbyte)==1)//check if instruction needs 2nd register
+			{
+				strncpy(instptr->operand+1+strlen(RegisterTab(r1)), ",", 1);
+				strncpy(instptr->operand+2+strlen(RegisterTab(r1)), RegisterTab(r2), 2);
+			}
+			for(j=2; j<8; j++)/*Fills in extra space*/
+			{
+				if(instptr->operand[j]<44)
+					instptr->operand[j]=' ';
+			}
 			printf("				r1 %01X,	r2 %01X", r1, r2);
 			locctr+=2;
 			instptr->format=2;
@@ -156,14 +167,8 @@ link FormatCall(unsigned int reclength,
 						{
 							Instruction* instptrbase = malloc(sizeof(Instruction));
 							instptrbase->startadr=locctr;
-							instptrbase->opname[0] = ' ';
-							instptrbase->opname[1] = 'N';
-							instptrbase->opname[2] = 'O';
-							instptrbase->opname[3] = 'B';
-							instptrbase->opname[4] = 'A';
-							instptrbase->opname[5] = 'S';
-							instptrbase->opname[6] = 'E';
-							instptrbase->opname[7] = '\0';
+							strncpy(instptrbase->label, "      \0", 7);
+							strncpy(instptrbase->opname, " NOBASE\0",7);
 							head = Add(head, instptrbase);
 							baseflag=false;
 						}
