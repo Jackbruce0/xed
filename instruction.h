@@ -83,6 +83,10 @@ Instruction* Format4(Instruction* instptr,
 				unsigned char curbyte, unsigned int locctr,
 				int i, unsigned char inst[30]);
 				
+Instruction* ByteData(Instruction* instptr,
+				unsigned char curbyte, unsigned int locctr,
+				int i, unsigned char inst[30]);
+				
 Instruction* OpcodeCopy(unsigned char curbyte, 
 									Instruction* instptr);
 link InsertRESDirectives(link HEAD, int LOCCTR, int nextaddr);
