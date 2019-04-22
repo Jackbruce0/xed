@@ -13,6 +13,16 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
+#include "instruction.h"
+#include "records.h"
+
+FILE *FileOpen(char *fileName, char *mode);
+
+char *GetFileExt(char *baseName, char *ext);
+
+void FreeMem(char* objfname, char* symfname,
+			Header* H, Text** T, Mod** M, End* E, link head);
 
 int CharToNum(unsigned int dest, unsigned char input,
               int pos, int size);

@@ -10,6 +10,67 @@
 #include "xedlib.h"
 
 /*************************************************************
+ function: FileOpen
+ Notes: Opens given file in specified mode. Exits program
+    if unsuccessful.
+ I/O: input paramaters: base file name and extension name
+      output: char* with value of baseName + ext
+ *************************************************************/
+FILE *FileOpen(char *fileName, char *mode)
+{
+    FILE *fPtr;
+    fPtr = fopen(fileName, mode);
+    if(fPtr == NULL)
+    {
+        fprintf(stderr, "Cannot open file: %s\n", fileName);
+        exit(1);
+    }
+    return fPtr;
+} /* End function File_Open */
+
+/*************************************************************
+ function: GetFileExt
+ Notes: Combines a base file name with extension
+ I/O: input paramaters: base file name and extension name
+      output: char* with value of baseName + ext
+ *************************************************************/
+char *GetFileExt(char *baseName, char *ext)
+{
+    char *fileName = malloc((strlen(baseName)+5)*sizeof(char));
+    strncpy(fileName, baseName, strlen(baseName) + 1);
+    strncat(fileName, ext, 4);
+    return fileName;
+} /* End function Get_File_Ext */
+
+/*************************************************************
+ function: FreeMem
+ Notes: Frees memory reserved by malloc.
+ I/O: input paramaters: each pointer for malloc calls
+      output: none
+ *************************************************************/
+void FreeMem(char* objfname, char* symfname,
+			Header* H, Text** T, Mod** M, End* E, link head)
+{
+    free(objfname);
+	free(symfname);
+	int i;
+	for(i=0; i<GetTcount(); i++)
+	{
+		free(T[i]);
+	}
+	for(i=0; i<GetMcount(); i++)
+	{
+		free(M[i]);
+	}
+	free(T);
+	free(M);
+	free(H);
+	free(E);
+	FreeItems(head);
+	FreeList(head);
+} /* End function FreeMem */
+
+/*************************************************************
  function: CharToNum (DECIMAL NUMBER)
  Notes: Takes character, interprets it as a hex digit, and
  adds value based on position to a destination integer.

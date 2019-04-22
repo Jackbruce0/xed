@@ -15,84 +15,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "records.h"
-#include "instruction.h"
 #include "symbol.h"
-
-/*************************************************************
- I DON'T KNOW WHERE TO PUT THESE PROTOTYPES
- (apprently main.h is a wierd thing to do)
-*************************************************************/
-FILE *FileOpen(char *fileName, char *mode);
-char *GetFileExt(char *baseName, char *ext);
-/* End of main.c prototypes */
-
-/*************************************************************
- function: FileOpen
- Notes: Opens given file in specified mode. Exits program
-    if unsuccessful.
- I/O: input paramaters: base file name and extension name
-      output: char* with value of baseName + ext
- *************************************************************/
-FILE *FileOpen(char *fileName, char *mode)
-{
-    FILE *fPtr;
-    fPtr = fopen(fileName, mode);
-    if(fPtr == NULL)
-    {
-        fprintf(stderr, "Cannot open file: %s\n", fileName);
-        exit(1);
-    }
-    return fPtr;
-} /* End function File_Open */
-
-/*************************************************************
- function: GetFileExt
- Notes: Combines a base file name with extension
- I/O: input paramaters: base file name and extension name
-      output: char* with value of baseName + ext
- *************************************************************/
-char *GetFileExt(char *baseName, char *ext)
-{
-    char *fileName = malloc((strlen(baseName)+5)*sizeof(char));
-    strncpy(fileName, baseName, strlen(baseName) + 1);
-    strncat(fileName, ext, 4);
-    return fileName;
-} /* End function Get_File_Ext */
-
-/*************************************************************
- function: FreeMem
- Notes: Frees memory reserved by malloc.
- I/O: input paramaters: each pointer for malloc calls
-      output: none
- *************************************************************/
-void FreeMem(char* objfname, char* symfname,
-			Header* H, Text** T, Mod** M, End* E, link head)
-{
-    free(objfname);
-	free(symfname);
-	int i;
-	for(i=0; i<GetTcount(); i++)
-	{
-		free(T[i]);
-	}
-	for(i=0; i<GetMcount(); i++)
-	{
-		free(M[i]);
-	}
-	free(T);
-	free(M);
-	free(H);
-	free(E);
-	FreeItems(head);
-	FreeList(head);
-} /* End function FreeMem */
+#include "xedlib.h"
 
 int main(int argc, const char * argv[])
 {
     char *fname = (char*)argv[1];
     char *objfname = GetFileExt(fname, ".obj"); //fname.obj
     char *symfname = GetFileExt(fname, ".sym"); //fname.sym
+	char *sicfname = GetFileExt(fname, ".sic"); //fname.sic
+	char *lisfname = GetFileExt(fname, ".lis"); //fname.lis
     
     /*********** STEP 1 ***********/
     /* File Check/Open */
@@ -174,6 +106,8 @@ int main(int argc, const char * argv[])
            E->firstinst);
 	printf("\nSOURCE CODE DISASSEMBLEMENT PROGRESS\n");
 	PrintList(head);
+	PrintSIC(head, sicfname);
+	PrintLisFile(head, lisfname);
     ///////
 	FreeMem(objfname, symfname, H, T, M, E, head);
     return 0;

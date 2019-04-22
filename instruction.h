@@ -55,6 +55,8 @@ typedef struct node* link;
 link Add(link head, Instruction *inst);
 unsigned int GetLocctr(link head);
 void PrintList(link head);
+void PrintSIC(link head, char *fileName);
+void PrintLisFile(link head, char *fileName);
 void FreeItems(link head);
 void FreeList(link head);
 
