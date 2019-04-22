@@ -29,11 +29,11 @@ unsigned int basevalue = 0; /* basevalue is kept track of
  
 link FormatCall(unsigned int reclength, 
 				unsigned char inst[30], link head,
-				unsigned int locctr)
+				unsigned int locctr, int lastbyte)
 {
     unsigned char curbyte;
     int i;
-	
+    enum boolean needsLTORG = true;
     for(i=0; i<reclength; i++)
 	{
 		Instruction* instptr = malloc(sizeof(Instruction));
@@ -45,17 +45,24 @@ link FormatCall(unsigned int reclength,
 		curbyte = inst[i];
         /* Symbol Check */
 		strncpy(instptr->label, GetSymbolName(locctr), 7);
+        
         /* Literal Check */
         Literal *lit = GetLiteral(locctr);
         if (lit != NULL)
         {
             /* an LTORG statement prior (if not EOF) */
-            instptr = InsertLiteral(lit, inst, locctr, i);
+            if(needsLTORG && locctr + lit->length/2 < lastbyte)
+            {
+                head = InsertLTORGDirective(head, locctr);
+                needsLTORG = false;
+            }
+            instptr = InsertLiteral(lit, inst, locctr, i, lastbyte);
             locctr += instptr->format;
             Add(head,instptr);
             continue;
         }
         /* End of Literal Check */
+        
 /**************FORMAT 1**************/
 		if(SicInstCheck(curbyte)==1)
 		{
@@ -148,6 +155,7 @@ link FormatCall(unsigned int reclength,
 			basevalue = targetaddress;
 		}
     }
+    needsLTORG = true;
 	return head;
 }
 
@@ -462,7 +470,7 @@ link InsertRESDirectives(link HEAD, int LOCCTR, int nextaddr)
  *************************************************************/
 Instruction *InsertLiteral(Literal *lit,
                            unsigned char inst[30], int locctr ,
-                           int i)
+                           int i, int lastbyte)
 {
     /* an LTORG statement prior (if not EOF) */
     Instruction *instptr = malloc(sizeof(Instruction));
@@ -556,7 +564,7 @@ link InsertENDDirective(link HEAD, int LOCCTR)
  function: InsertBASEDirective
  Notes: Puts the BASE directive after LDB instruction.
  I/O: input paramaters: Head of linked list & locctr.
-      output: void
+      output: link to new head
  *************************************************************/
 link InsertBASEDirective(link HEAD, int LOCCTR,
 						unsigned int targetaddress)
@@ -573,6 +581,30 @@ link InsertBASEDirective(link HEAD, int LOCCTR,
 	strncpy(BASE->operand,
 			GetSymbolName(targetaddress), 7);
     HEAD = Add(HEAD, BASE);
+    return HEAD;
+} /* End of function Insert_BASE_Directive */
+
+/*************************************************************
+ function: InsertLTORGDirective
+ Notes: Puts the LTORG directive after when literal pool is
+    declared
+ I/O: input paramaters: Head of linked list & locctr.
+      output: link to new head
+ *************************************************************/
+link InsertLTORGDirective(link HEAD, int LOCCTR)
+{
+    Instruction *LTORG = malloc(sizeof(Instruction));
+    LTORG->format = -1;
+    LTORG->objcode[0] = ' ';
+    LTORG->objcode[1] = ' ';
+    LTORG->objcode[2] = ' ';
+    LTORG->objcode[3] = '\0';
+    LTORG->startadr=LOCCTR;
+    strncpy(LTORG->opname, "LTORG ",6);
+    strncpy(LTORG->label, "      \0", 7);
+    strncpy(LTORG->operand,
+            "      \0", 7);
+    HEAD = Add(HEAD, LTORG);
     return HEAD;
 } /* End of function Insert_BASE_Directive */
 

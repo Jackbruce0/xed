@@ -63,7 +63,7 @@ void FreeList(link head);
 /*format.c prototypes*/
 link FormatCall(unsigned int reclength, 
 				unsigned char inst[30], link head,
-				unsigned int locctr);
+				unsigned int locctr, int lastbyte);
 				
 Instruction* Format1(Instruction* instptr,
 				unsigned char curbyte, unsigned int locctr,
@@ -99,9 +99,12 @@ link InsertBASEDirective(link HEAD, int LOCCTR,
 Instruction* OpcodeCopy(unsigned char curbyte, 
 									Instruction* instptr);
 link InsertRESDirectives(link HEAD, int LOCCTR, int nextaddr);
+
+link InsertLTORGDirective(link HEAD, int LOCCTR);
+
 Instruction *InsertLiteral(Literal *lit,
                            unsigned char inst[30], int locctr ,
-                           int i);
+                           int i, int lastbtye);
 #endif /* instruction_h */
 
 /*******************[ EOF: instruction.h ]********************/
