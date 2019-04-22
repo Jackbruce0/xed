@@ -540,7 +540,7 @@ link InsertSTARTDirective(link HEAD, char* progname, int LOCCTR)
 	START->objcode[3] = '\0';
     START->startadr = LOCCTR;
 	strncpy(START->opname, " START \0", 8);
-	sprintf(START->operand, " %d", LOCCTR);
+	sprintf(START->operand, " %X", LOCCTR);
     strncpy(START->label, progname, 7);
     HEAD = Add(HEAD, START);
     return HEAD;
