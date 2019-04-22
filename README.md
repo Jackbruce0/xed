@@ -4,7 +4,9 @@ Class: CS 530-01 Spring 2019
 Assignment #2 SIC XE DISASSEMBLER
 File name: README.txt
 
-***[BELOW IS STILL A WORK IN PROGRESS]***
+For testing, please use .obj/.sym files located in a2/test, and compare output with corresponding
+files in a2/test/example
+
 File Manifest:
 	-main.c
 	-main.h
@@ -28,12 +30,15 @@ Test Files:
 	-test/2_2.* (Figure 2.2) SIC BASIC
 	-test/2_6.* (Figure 2.6) XE
 	-test/2_10.* (Figure 2.10) XE
-	-test/example contains example output of what xed SHOULD output as .sic and .lis files
-
+	-test/example contains example output of what .sic and .lis files should look like
+		-THESE FILES WERE COPIED FROM OUT TEXTBOOK
+		-test/example/correct2_2.*
+		-test/example/correct2_10.*
+		-test/example/sample.* (the .lis file we were given does not match .sic) 
 
 Compile Instructions
 
-	To compile the application, type "make" in the directory with the Makefile to 
+	To compile the application, type "make" in the directory with the Makefile (~/a2) to 
 	create the executable. To remove *.o files, type "make clean".
 	
 	
@@ -43,7 +48,8 @@ Operating Instructions
 	
 	-file name will not include any extensions
 	-filename must contain path to directory that contains <filename>.obj and <filename>.sym
-
+	- For testing, please use .obj/.sym files located in a2/test, and compare output with corresponding
+		files in a2/test/example
 	ex) xed ./test/2_2 
 
 
@@ -51,7 +57,8 @@ Description of novel design decisions
 
 	1. Instruction struct was exceptionally useful in linking all phases of this project
 		- Instruction struct was designed to completely encapsulate printing a .lis file
-		- The complex job of disassembly was simplified to smaller tasks of simply figuring out how to populate the fields of Instruction structs.
+		- The complex job of disassembly was simplified to smaller tasks of simply figuring out how to populate 
+			the fields of Instruction structs.
 
 	2. Read and tokenize .obj and .sym file into structs prior to processing
 		- This greatly simplified the process of interpreting these files
@@ -75,6 +82,7 @@ Description of all known deficiencies or bugs
 Lessons Learned
 
 	-Improved knowledge of the C programming language (1st time using this language was with a1).
-	-Maintaining organization and good programming practices on a large project like this is very challenging. The need for a detailed design document was made apparent during this project.
+	-Maintaining organization and good programming practices on a large project like this is very challenging. 
+		The need for a detailed design document was made apparent during this project.
 	-There are some things that a disassembler can't do with certainty (some of which are mentioned above).
 	-Reverse engineering is hard! We felt overwhelmed at certain points of this project.
