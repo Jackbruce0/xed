@@ -20,7 +20,14 @@
 
 int main(int argc, const char * argv[])
 {
-    char *fname = (char*)argv[1];
+    if(argv[1]==NULL)
+	{
+		printf("Please provide a <filename> that has ");
+		printf("<filename>.obj and <filename>.sym ");
+		printf("files to associate with.\n");
+		exit(1);
+	}
+	char *fname = (char*)argv[1];
     char *objfname = GetFileExt(fname, ".obj"); //fname.obj
     char *symfname = GetFileExt(fname, ".sym"); //fname.sym
 	char *sicfname = GetFileExt(fname, ".sic"); //fname.sic
