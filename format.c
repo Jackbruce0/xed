@@ -28,8 +28,7 @@ link FormatCall(unsigned int reclength,
 				unsigned int locctr)
 {
     unsigned char curbyte;
-    int i, basevalue = 0;
-	enum boolean baseflag = false;
+    int i, basevalue=0;
 	
     for(i=0; i<reclength; i++)
 	{
@@ -38,7 +37,6 @@ link FormatCall(unsigned int reclength,
         //Initialize your variables jake!
         instptr->startadr = 0;
         strncpy(instptr->operand, "         \0", 10);
-        
         
 		curbyte = inst[i];
         /* Symbol Check */
@@ -112,37 +110,6 @@ link FormatCall(unsigned int reclength,
 			BinaryPrint(inst[i+1]);
 			BinaryPrint(inst[i+2]);
 			//
-			if(Bit(inst[i+1],5)==1)/*Base Directive Check*/
-			{
-				/*
-				if(baseflag==true)
-				{
-					Instruction* instptrbase = malloc(sizeof(Instruction));
-					instptrbase->format = -1;
-					instptrbase->startadr=locctr;
-					istrncpy(instptrbase->label, "      \0", 7);
-					strncpy(instptrbase->opname, " NOBASE\0",9);
-					strncpy(instptrbase->operand, "      \0", 7);
-					head = Add(head, instptrbase);
-					baseflag=false;
-				}
-				*/
-			}
-			else if(Bit(inst[i+1],6)==1)
-			{
-				if(baseflag==false)
-				{
-					basevalue = locctr;
-					Instruction* instptrbase = malloc(sizeof(Instruction));
-					instptrbase->format = -1;
-					instptrbase->startadr=locctr;
-					strncpy(instptrbase->label, "      \0", 7);
-					strncpy(instptrbase->opname, "BASE  ",6);
-					strncpy(instptrbase->operand, "      \0", 7);
-					head = Add(head, instptrbase);
-					baseflag=true;
-				}
-			}
 			instptr = Format3(instptr, curbyte,
 						locctr, i, inst, basevalue);
 			locctr+=3;
@@ -166,6 +133,16 @@ link FormatCall(unsigned int reclength,
 		}
 		printf("\n");
 		head = Add(head, instptr);
+		if(strcmp(SicInstMnemonic(curbyte),"LDB")==0)
+		{
+			int disp1 = ByteToHalfByte(instptr->objcode[1], 0) << 8;
+			int disp2 = instptr->objcode[2];
+			int disp = disp1 + disp2;
+			unsigned int targetaddress = disp + locctr;
+			head = InsertBASEDirective(head, 
+						locctr-3, targetaddress);
+			basevalue = targetaddress;
+		}
     }
 	return head;
 }
@@ -329,6 +306,7 @@ Instruction* Format3(Instruction* instptr,
 	{
 		addressingmode = "Base Relative";
 		targetaddress = disp + basevalue;
+		printf("\nTA FOR BASE %d\n", basevalue);
 	}
 	else
 	{
@@ -569,6 +547,30 @@ link InsertENDDirective(link HEAD, int LOCCTR)
     HEAD = Add(HEAD, END);
     return HEAD;
 } /* End of function Insert_END_Directive */
+
+/*************************************************************
+ function: InsertBASEDirective
+ Notes: Puts the BASE directive after LDB instruction.
+ I/O: input paramaters: Head of linked list & locctr.
+      output: void
+ *************************************************************/
+link InsertBASEDirective(link HEAD, int LOCCTR,
+						unsigned int targetaddress)
+{
+	Instruction *BASE = malloc(sizeof(Instruction));
+    BASE->format = -1;
+    BASE->objcode[0] = ' ';
+    BASE->objcode[1] = ' ';
+    BASE->objcode[2] = ' ';
+    BASE->objcode[3] = '\0';
+	BASE->startadr=LOCCTR;
+	strncpy(BASE->opname, "BASE  ",6);
+    strncpy(BASE->label, "      \0", 7);
+	strncpy(BASE->operand,
+			GetSymbolName(targetaddress), 7);
+    HEAD = Add(HEAD, BASE);
+    return HEAD;
+} /* End of function Insert_BASE_Directive */
 
 /*************************************************************
  function: OpcodeCopy

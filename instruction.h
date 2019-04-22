@@ -39,6 +39,7 @@ typedef struct Instruction
                                raw obj code for each line */
 	int format; /* keeps track of format for locctr
                  format = -1 if struct is used for directive */
+
 } Instruction;
 
 typedef struct node* link;
@@ -91,6 +92,9 @@ Instruction* ByteData(Instruction* instptr,
 link InsertSTARTDirective(link HEAD, char* progname, int LOCCTR);
 
 link InsertENDDirective(link HEAD, int LOCCTR);
+
+link InsertBASEDirective(link HEAD, int LOCCTR,
+							unsigned int targetaddress);
 				
 Instruction* OpcodeCopy(unsigned char curbyte, 
 									Instruction* instptr);
