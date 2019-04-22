@@ -265,6 +265,19 @@ int NextSymbolAddress(int value)
 } /* End of function Next_Symbol_Address */
 
 /*************************************************************
+ function: GetLastSymbolAddress
+ Notes: Return value of last (occupied) entry of SYMTAB
+ I/O: input paramaters: void
+      output: value of last SYMBOL
+ *************************************************************/
+int GetLastSymbolAddress(void)
+{
+    int index = -1; /*offset b/c last element is NULL */
+    while(SYMTAB[index + 1] != NULL) index++;
+    return SYMTAB[index]->value;
+} /* End of function Get_Last_Symbol_Address */
+
+/*************************************************************
  function: GetLiteral
  Notes: When given a value, this function will search LITTAB
     and return Literal* of the appropriate literal name. If no

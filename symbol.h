@@ -44,6 +44,8 @@ char *GetSymbolName(int address);
 
 int NextSymbolAddress(int value);
 
+int GetLastSymbolAddress(void);
+
 Literal *GetLiteral(unsigned int address);
 
 #endif /* symbol_h */
