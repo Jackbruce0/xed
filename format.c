@@ -67,11 +67,6 @@ link FormatCall(unsigned int reclength,
 /**************FORMAT 1**************/
 		if(SicInstCheck(curbyte)==1)
 		{
-			//Debugging Prints
-			printf("Format 1: %6s ", 
-					SicInstMnemonic(curbyte));
-			BinaryPrint(inst[i]);
-			//
 			instptr = Format1(instptr, curbyte,
 						locctr, i, inst);
 			locctr++;
@@ -86,12 +81,6 @@ link FormatCall(unsigned int reclength,
 /**************FORMAT 2**************/
 		else if(SicInstCheck(curbyte)==2)
 		{
-			//Debugging Prints
-			printf("Format 2: %6s ",
-					SicInstMnemonic(curbyte));
-			BinaryPrint(inst[i]);
-			BinaryPrint(inst[i+1]);
-			//
 			instptr = Format2(instptr, curbyte,
 						locctr, i, inst);
 			locctr+=2;
@@ -100,13 +89,6 @@ link FormatCall(unsigned int reclength,
 /****************FORMAT 0*****************/
 		else if( Bit(curbyte,1)==0 && Bit(curbyte,0)==0 )
 		{
-			//Debugging Prints
-			printf("Format 0: %6s ",
-					SicInstMnemonic(curbyte));
-			BinaryPrint(inst[i]);
-			BinaryPrint(inst[i+1]);
-			BinaryPrint(inst[i+2]);
-			//
 			instptr = Format0(instptr, curbyte,
 						locctr, i, inst);
 			locctr+=3;
@@ -115,13 +97,6 @@ link FormatCall(unsigned int reclength,
 /******************FORMAT 3********************/
 		else if(Bit(inst[i+1],4)==0)
 		{
-			//Debugging Prints
-			printf("Format 3: %6s ",
-					SicInstMnemonic(curbyte));
-			BinaryPrint(inst[i]);
-			BinaryPrint(inst[i+1]);
-			BinaryPrint(inst[i+2]);
-			//
 			instptr = Format3(instptr, curbyte,
 						locctr, i, inst, basevalue);
 			locctr+=3;
@@ -130,20 +105,11 @@ link FormatCall(unsigned int reclength,
 /*****************FORMAT 4********************/
 		else
 		{
-			//Debugging Prints
-			printf("Format 4: %6s ",
-					SicInstMnemonic(curbyte));
-			BinaryPrint(inst[i]);
-			BinaryPrint(inst[i+1]);
-			BinaryPrint(inst[i+2]);
-			BinaryPrint(inst[i+3]);
-			//
 			instptr = Format4(instptr, curbyte,
 						locctr, i, inst);
 			locctr+=4;
 			i+=3;
 		}
-		printf("\n");
 		head = Add(head, instptr);
 		if(strcmp(SicInstMnemonic(curbyte),"LDB")==0)
 		{
@@ -213,7 +179,6 @@ Instruction* Format2(Instruction* instptr,
 		if(instptr->operand[j]<44)
 			instptr->operand[j]=' ';
 	}
-	printf("				r1 %01X,	r2 %01X", r1, r2);//Debugger
 	instptr->format=2;
 	instptr->objcode[0] = inst[i];
 	instptr->objcode[1] = inst[i+1];
@@ -256,7 +221,6 @@ Instruction* Format0(Instruction* instptr,
 		strncpy(instptr->operand+
 		(strlen(GetSymbolName(targetaddress))+1), "  ", 2);
 	}
-	printf("			x %1d	target	%05X", xflag, targetaddress);//Debugger
 	instptr->format=3;
 	instptr->objcode[0] = inst[i];
 	instptr->objcode[1] = inst[i+1];
@@ -319,7 +283,6 @@ Instruction* Format3(Instruction* instptr,
 	{
 		addressingmode = "Base Relative";
 		targetaddress = disp + basevalue;
-		printf("\nTA FOR BASE %d\n", basevalue);
 	}
 	else
 	{
@@ -347,7 +310,6 @@ Instruction* Format3(Instruction* instptr,
 	instptr->objcode[0] = inst[i];
 	instptr->objcode[1] = inst[i+1];
 	instptr->objcode[2] = inst[i+2];
-	printf("			x %1d	TA  	%06X   %s", xflag, targetaddress, addressingmode);//Debugger
 	return instptr;
 }
 
@@ -413,7 +375,6 @@ Instruction* Format4(Instruction* instptr,
 	instptr->objcode[1] = inst[i+1];
 	instptr->objcode[2] = inst[i+2];
 	instptr->objcode[3] = inst[i+3];
-	printf("	x %1d	adrs	%05X  %s", xflag, address, addressingmode);//Debugger
 	return instptr;
 }
 

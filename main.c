@@ -95,33 +95,18 @@ int main(int argc, const char * argv[])
 	head = InsertENDDirective(head, H->startadr);
 	/******** END OF STEP 2 *******/
     
-    //test//
-    printf("T record count: %d, M record count: %d\n",
-           GetTcount(), GetMcount());
+    /*********** STEP 3 ***********/
     printf("Program name: %s\n", H->name);
     printf("Starting address: %06X\n", H->startadr);
     printf("Program length: %06X\n\n", H->prglen);
-    printf("1st text record start address: %06X\n",
-           T[0]->startadr);
-    printf("1st text record length: %02X\n", T[0]->reclength);
-    printf("Instructions: ");
-    int i = 0;
-    while(i < T[0]->reclength) {
-        printf("%02X ", T[0]->inst[i]);
-        i++;
-    }
-    printf("\n\n");
-//    printf("1st mod record start address: %06X\n",
-//           M[0]->startadr);
-//    printf("1st mod record length: %02X\n\n",
-//           M[0]->modLength);
-    printf("Address of 1st executable instruction: %06X\n",
-           E->firstinst);
-	printf("\nSOURCE CODE DISASSEMBLEMENT PROGRESS\n");
+	printf("\nSOURCE CODE DISASSEMBLEMENT\n");
 	PrintList(head);
-    ///////
 	WriteFile(head, sicfname, 0);
 	WriteFile(head, lisfname, 1);
+	/******** END OF STEP 3 *******/
+	
+	printf("\nFiles %s and %s were created.\n\n",
+				sicfname, lisfname);
 	FreeMem(objfname, symfname, H, T, M, E, head);
     return 0;
 }
