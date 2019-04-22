@@ -547,7 +547,7 @@ link InsertSTARTDirective(link HEAD, char* progname, int LOCCTR)
 link InsertENDDirective(link HEAD, int LOCCTR)
 {
     Instruction *END = malloc(sizeof(Instruction));
-    END->format = -1;
+    END->format = -2;
     END->objcode[0] = ' ';
     END->objcode[1] = ' ';
     END->objcode[2] = ' ';
@@ -570,7 +570,7 @@ link InsertBASEDirective(link HEAD, int LOCCTR,
 						unsigned int targetaddress)
 {
 	Instruction *BASE = malloc(sizeof(Instruction));
-    BASE->format = -1;
+    BASE->format = -2;
     BASE->objcode[0] = ' ';
     BASE->objcode[1] = ' ';
     BASE->objcode[2] = ' ';
@@ -594,7 +594,7 @@ link InsertBASEDirective(link HEAD, int LOCCTR,
 link InsertLTORGDirective(link HEAD, int LOCCTR)
 {
     Instruction *LTORG = malloc(sizeof(Instruction));
-    LTORG->format = -1;
+    LTORG->format = -2;
     LTORG->objcode[0] = ' ';
     LTORG->objcode[1] = ' ';
     LTORG->objcode[2] = ' ';

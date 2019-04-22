@@ -79,8 +79,14 @@ void PrintList(link head)
 	int j;
 	while(listptr!=NULL)
 	{
-		printf("%04X  ", listptr->instptr->startadr);
-
+		if(listptr->instptr->format!=-2)
+		{
+			printf("%04X  ", listptr->instptr->startadr);
+		}
+		else
+		{
+			printf("      ");
+		}
 		printf("%6s ", listptr->instptr->label);
 
         printf("%7s  ", listptr->instptr->opname);
@@ -137,7 +143,14 @@ void WriteFile(link head, char *fileName, int fileflag)
 	{
 		if(fileflag==1)
 		{
-			fprintf(fPtr, "%04X  ", listptr->instptr->startadr);
+			if(listptr->instptr->format!=-2)
+			{
+				fprintf(fPtr, "%04X  ", listptr->instptr->startadr);
+			}
+			else
+			{
+				fprintf(fPtr, "      ");
+			}
 		}
 
 		fprintf(fPtr, "%6s ", listptr->instptr->label);
