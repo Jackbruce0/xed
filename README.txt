@@ -13,7 +13,6 @@ File Manifest:
 	-xedlib.c
 	-xedlib.h
 	-format.c
-	-instruction.c
 	-instruction.h
 	-optab.c
 	-optab.h
@@ -23,6 +22,7 @@ File Manifest:
 	-symbol.h
 	-linkedlist.c
 	-README.md
+	-Software_Design_Doc.pdf
 	-Makefile
 	-xed (executable on edoras)
 Test Files:
@@ -31,7 +31,7 @@ Test Files:
 	-test/2_6.* (Figure 2.6) XE
 	-test/2_10.* (Figure 2.10) XE
 	-test/example contains example output of what .sic and .lis files should look like
-		-THESE FILES WERE COPIED FROM OUT TEXTBOOK
+		-THESE FILES WERE COPIED FROM OUR TEXTBOOK
 		-test/example/correct2_2.*
 		-test/example/correct2_10.*
 		-test/example/sample.* (the .lis file we were given does not match .sic) 
@@ -63,7 +63,7 @@ Description of novel design decisions
 	2. Read and tokenize .obj and .sym file into structs prior to processing
 		- This greatly simplified the process of interpreting these files
 	
-	Full list of design decisions are available in our design document
+	Full list of design decisions are available in Software_Design_Document.pdf
 
 	
 Description of any extra functionality not required
@@ -76,13 +76,22 @@ Description of all known deficiencies or bugs
 	Cannot recognize use of EQU directive.
 
 	BYTE and WORD directives.
-		- Works sometimes
+		- Only BYTE works at end of a text record if 1 byte is left and it is not a format 1 instruction
+		- Can not recognize WORD
 	
+	Immediate addressing prioritizes use of SYMBOLS over direct values
+		- ex) #0 may be written as #FIRST
+		- No way to distinguish these cases from a dissasemblers point of view
+
+	Cannot recognize use of Literals
+		- Only recognizes literal pools, but can not recognize the calling of literals as operands
+
+	Default literal pool appears before END directive, as opposed to afterwards 
 
 Lessons Learned
 
-	-Improved knowledge of the C programming language (1st time using this language was with a1).
-	-Maintaining organization and good programming practices on a large project like this is very challenging. 
+	- Improved knowledge of the C programming language (1st time using this language was with a1).
+	- Maintaining organization and good programming practices on a large project like this is very challenging. 
 		The need for a detailed design document was made apparent during this project.
-	-There are some things that a disassembler can't do with certainty (some of which are mentioned above).
-	-Reverse engineering is hard! We felt overwhelmed at certain points of this project.
+	- There are some things that a disassembler can't do with certainty (some of which are mentioned above).
+	- Reverse engineering is hard! We felt overwhelmed at certain points of this project.
