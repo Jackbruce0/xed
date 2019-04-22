@@ -83,7 +83,7 @@ int main(int argc, const char * argv[])
         if(textnx + 1 < GetTcount())
             nextaddr = T[textnx + 1]->startadr;
         else
-            nextaddr = GetLastSymbolAddress(); //Cannot handle VERY last symbol
+            nextaddr = H->startadr + H->prglen; /* EOF case */
 		head=FormatCall(T[textnx]->reclength,
 						T[textnx]->inst, head,
 						LOCCTR);

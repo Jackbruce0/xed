@@ -449,7 +449,7 @@ link InsertRESDirectives(link HEAD, int LOCCTR, int nextaddr)
         RES->startadr = LOCCTR;
         strncpy(RES->label, GetSymbolName(LOCCTR), 7);
         nextsymaddr = NextSymbolAddress(LOCCTR);
-        if(nextaddr > nextsymaddr)
+        if(nextaddr > nextsymaddr && nextsymaddr != -1)
         {
             size = nextsymaddr - LOCCTR;
             LOCCTR = nextsymaddr;
