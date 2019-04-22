@@ -267,7 +267,7 @@ Instruction* Format3(Instruction* instptr,
 	{
 		//addressingmode = "Immediate";
 		instptr->operand[0]='#';
-		sprintf(instptr->operand+1, "%d    ", disp);
+		sprintf(instptr->operand+1, "%d     ", disp);
 	}
 	else
 	{
@@ -439,7 +439,7 @@ Instruction *InsertLiteral(Literal *lit,
     instptr->startadr = locctr;
     strncpy(instptr->label, "*     \0", 7);
     strncpy(instptr->opname, lit->literal, 8);
-    strncpy(instptr->operand, "      \0", 7);
+    strncpy(instptr->operand, " \0", 2);
     int bytesize = lit->length / 2; /* length is
                                      in half bytes */
     instptr->format = bytesize; /* for printing */
