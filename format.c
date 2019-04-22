@@ -23,12 +23,16 @@ enum boolean {false, true};
       output: Returns Head of linked list
  *************************************************************/
 
+unsigned int basevalue = 0; /* basevalue is kept track of
+							   throughout all of the 
+							   Text records. */
+ 
 link FormatCall(unsigned int reclength, 
 				unsigned char inst[30], link head,
 				unsigned int locctr)
 {
     unsigned char curbyte;
-    int i, basevalue=0;
+    int i;
 	
     for(i=0; i<reclength; i++)
 	{
