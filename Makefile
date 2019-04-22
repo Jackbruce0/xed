@@ -4,10 +4,10 @@
 # usernames: cssc0420 & cssc0413
 ###########################################################
 xed: main.o
-	gcc *.o -o xed
+	gcc *.o -o xed -lm
 
 main.o: *.c *.h
-	gcc -c *.c -lm
+	gcc -c *.c
 
 clean:
 	rm *.o
