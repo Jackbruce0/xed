@@ -1,6 +1,7 @@
 /*************************************************************
  Names: Jack Bruce & Jacob Romio
  usernames: cssc0420 & cssc0413
+ RedID's: 822320220 & 822843795
  Project: CS530 Assignment 2
  File: symbol.c
  Notes: All methods for:
@@ -31,55 +32,39 @@ void BuildTables(FILE *symfile, char *symfname)
     {
         fprintf(stderr, "Invalid header for SYMTAB: %s\n",
                 symfname);
+        fprintf(stderr, "Header for .sym file must follow the exact format of the example you gave us (sample.sym)\n");
         exit(1);
     }
-    printf("%s\n", "SYMTAB checks out to me!");
     char line[100];
     fgets(line, 99, symfile); /* Burn line of _'s */
-    printf("%s", line);
     while(line[0] != '\n')
     {
         fgets(line, 99, symfile);
         if(line[0] == '\n') break;
-        printf("%s", line);
         symcount++;
     }
-    printf("symbol count = %d\n\n", symcount);
+    printf("Symbol Count = %d\n", symcount);
     if(!LitHeaderPresent(symfile)) /* cursor is now on next
                                     line */
     {
         fprintf(stderr, "Invalid header for LITTAB: %s\n",
                 symfname);
+        fprintf(stderr, "Header for .sym file must follow the exact format of the example you gave us (sample.sym)\n");
         exit(1);
     }
-    printf("%s\n", "LITTAB checks out to me!");
     fgets(line, 99, symfile); /* Burn line of _'s */
-    printf("%s", line);
+
     while(!feof(symfile))
     {
         if(!fgets(line, 99, symfile)) {
-            printf("End of file!\n");
             break;
         }
-        printf("%s", line);
         litcount++;
     }
-    printf("literal count = %d\n\n", litcount);
+    printf("Literal Count = %d\n\n", litcount);
     rewind(symfile);
     BuildSYMTAB(symfile, symcount);
     BuildLITTAB(symfile, litcount);
-    
-    /**** TEST of methods ****/
-//    char test[7];
-//    strncpy(test, GetSymbolName(33), 7);
-//    printf("GetSymbolName returns: %s\n", test);
-//
-//    Literal *litty = GetLiteral(6); /* BAD ADDRESS WILL CRASH PROGRAM */
-//    printf("GetLiteral returns:\n  name: '%s'\n  literal: %s\n  length: %d\n  address: %06X\n\n"
-//           , litty->name, litty->literal, litty->length,
-//           litty->address);
-    
-    /****** END OF TEST ******/
 } /* End function Build_Tables */
 
 /*************************************************************
@@ -128,7 +113,6 @@ void BuildSYMTAB(FILE *symfile, int size) {
     fgets(line, 99, symfile);
     char token[7];
     int i = 0, j;
-    printf("This is from the SYMTAB data structure!\n");
     while(i < size)
     {
         SYMTAB[i] = malloc(sizeof(Symbol));
@@ -148,11 +132,6 @@ void BuildSYMTAB(FILE *symfile, int size) {
         }
         /* 16 = type */
         SYMTAB[i]->type = line[16];
-        
-        /* TEST */
-        printf("%s  %06X  %c\n", SYMTAB[i]->label, SYMTAB[i]->value, SYMTAB[i]->type);
-        /********/
-        
         i++;
     }
     SYMTAB[size] = NULL;
@@ -175,10 +154,8 @@ void BuildLITTAB(FILE *symfile, int size)
                                SYMTAB value*/
     fgets(line, 99, symfile);
     fgets(line,99, symfile);
-    printf("%s\n",line);
     char token[10];
     int i = 0, j;
-    printf("This is from the LITTAB data structure!\n");
     while(i < size)
     {
         LITTAB[i] = malloc(sizeof(Literal));
@@ -202,13 +179,6 @@ void BuildLITTAB(FILE *symfile, int size)
             LITTAB[i]->address = CharToNum(LITTAB[i]->address, token[j], j, 6);
             j++;
         }
-        
-        /* TEST */
-        printf("%s  %s  %X  %06X\n", LITTAB[i]->name,
-               LITTAB[i]->literal, LITTAB[i]->length,
-               LITTAB[i]->address);
-        /********/
-        
         i++;
     }
     LITTAB[size] = NULL;
@@ -236,7 +206,6 @@ char *GetSymbolName(int value)
         }
         index++;
     }
-    printf("\nLabel found: %s\n\n", label);
     return label;
 } /* End of function Get_Symbol_Name */
 
@@ -302,7 +271,6 @@ Literal *GetLiteral(unsigned int address)
         }
         index++;
     }
-    
     return lit;
 }
 

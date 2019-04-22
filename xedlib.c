@@ -1,6 +1,7 @@
 /*************************************************************
  Names: Jack Bruce & Jacob Romio
  usernames: cssc0420 & cssc0413
+ RedID's: 822320220 & 822843795
  Project: CS530 Assignment 2
  File: xedlib.c
  Notes: Library of general functions that are used throughout

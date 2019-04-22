@@ -1,6 +1,7 @@
 /*************************************************************
  Names: Jack Bruce & Jacob Romio
  usernames: cssc0420 & cssc0413
+ RedID's: 822320220 & 822843795
  Project: CS530 Assignment 2
  File: instruction.h
  Notes: Contains struct definition for instruction type. This

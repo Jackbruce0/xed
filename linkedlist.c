@@ -1,9 +1,12 @@
 /*************************************************************
  Names: Jack Bruce & Jacob Romio
  usernames: cssc0420 & cssc0413
+ RedID's: 822320220 & 822843795
  Project: CS530 Assignment 2
  File: linkedlist.c
- Notes:
+ Notes: Methods for storing and printing instruction stucts.
+    This list seeks to encapsulate the entirety of .sic/.lis
+    files.
  *************************************************************/
 
 #include <stdlib.h>
@@ -72,7 +75,6 @@ unsigned int GetLocctr(link head)
  I/O: input paramaters: Head of the linked list.
       output: N/A
  *************************************************************/
-
 void PrintList(link head)
 {
 	link listptr = head;
@@ -91,10 +93,8 @@ void PrintList(link head)
 
         printf("%7s  ", listptr->instptr->opname);
         
-        // operand[0] is unitialized often
         listptr->instptr->operand[9] = '\0';
 		printf("%7s   ", listptr->instptr->operand);
-        
         
         int format = listptr->instptr->format;
         int objlen = 0;
@@ -130,10 +130,9 @@ void PrintList(link head)
 	file or .lis file depending on fileflag, where 0=".sic"
 	and 1=".lis".
  I/O: input paramaters: Head of the linked list, filename,
-						and fileflag.
-      output: N/A
+        and fileflag.
+      output: void
  *************************************************************/
-
 void WriteFile(link head, char *fileName, int fileflag)
 {
 	FILE *fPtr = FileOpen(fileName, "wb");
@@ -214,7 +213,6 @@ void FreeItems(link head)
  I/O: input paramaters: Head of linked list
       output: N/A
  *************************************************************/
-
 void FreeList(link head)
 {
 	link listPtr;

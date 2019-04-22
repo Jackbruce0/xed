@@ -1,6 +1,7 @@
 /*************************************************************
  Names: Jack Bruce & Jacob Romio
  usernames: cssc0420 & cssc0413
+ RedID's: 822320220 & 822843795
  Project: CS530 Assignment 2
  File: optab.h
  Notes: Contains all of the mnemonics for the SIC/XE machine
@@ -29,12 +30,14 @@ typedef struct Op
                      else [0] = ' ' */
 } Op;
 
-#endif /* optab_h */
-
-/**prototypes**/
 int SicInstCheck(unsigned char curbyte);
+
 char* SicInstMnemonic(unsigned char curbyte);
+
 char* RegisterTab(unsigned int regnum);
+
 int NumOfRegisters(unsigned char curbyte);
+
+#endif /* optab_h */
 
 /*******************[ EOF: optab.h ]********************/

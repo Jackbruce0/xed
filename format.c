@@ -1,6 +1,7 @@
 /*************************************************************
  Names: Jack Bruce & Jacob Romio
  usernames: cssc0420 & cssc0413
+ RedID's: 822320220 & 822843795
  Project: CS530 Assignment 2
  File: format.c
  Notes: Breaks down contents of Text Records instructions to
@@ -477,6 +478,7 @@ Instruction *InsertLiteral(Literal *lit,
     instptr->startadr = locctr;
     strncpy(instptr->label, "*     \0", 7);
     strncpy(instptr->opname, lit->literal, 8);
+    strncpy(instptr->operand, "      \0", 7);
     int bytesize = lit->length / 2; /* length is
                                      in half bytes */
     instptr->format = bytesize; /* for printing */
