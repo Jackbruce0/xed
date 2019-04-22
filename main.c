@@ -75,6 +75,7 @@ int main(int argc, const char * argv[])
 	/*********** STEP 2 ***********/
     int LOCCTR = 0;
     int nextaddr = 0; /* address of next instruction */
+    int lastbyte = H->startadr + H->prglen;
 	link head = NULL;
 	head = InsertSTARTDirective(head, H->name, H->startadr);
 	for(textnx=0; textnx<GetTcount(); textnx++)
@@ -83,10 +84,10 @@ int main(int argc, const char * argv[])
         if(textnx + 1 < GetTcount())
             nextaddr = T[textnx + 1]->startadr;
         else
-            nextaddr = H->startadr + H->prglen; /* EOF case */
+            nextaddr = lastbyte; /* EOF case */
 		head=FormatCall(T[textnx]->reclength,
 						T[textnx]->inst, head,
-						LOCCTR);
+						LOCCTR, lastbyte);
         LOCCTR += T[textnx]->reclength;
         head = InsertRESDirectives(head, LOCCTR, nextaddr);
 	}
