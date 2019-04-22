@@ -5,46 +5,76 @@ Assignment #2 SIC XE DISASSEMBLER
 File name: README.txt
 
 ***[BELOW IS STILL A WORK IN PROGRESS]***
-File Manifest
+File Manifest:
 	-main.c
 	-main.h
+	-xedlib.c
+	-xedlib.h
+	-format.c
+	-instruction.c
+	-instruction.h
+	-optab.c
+	-optab.h
+	-records.c
+	-records.h
+	-symbol.c
+	-symbol.h
+	-linkedlist.c
 	-README.md
 	-Makefile
-	-xbd (executable on edoras)
+	-xed (executable on edoras)
+Test Files:
+	-test/sample.* (test files given) XE
+	-test/2_2.* (Figure 2.2) SIC BASIC
+	-test/2_6.* (Figure 2.6) XE
+	-test/2_10.* (Figure 2.10) XE
+	-test/example contains example output of what xed SHOULD output as .sic and .lis files
+
 
 Compile Instructions
 
-	To compile the application, type "make" in the directory with the files to 
-	create the executable. To remove *.o files,type "make clean".
+	To compile the application, type "make" in the directory with the Makefile to 
+	create the executable. To remove *.o files, type "make clean".
 	
 	
 Operating Instructions
-	xbd [-b] <filename>
-	
-	Type "xbd examplefile.xxx" to run the application in standard mode on the 
-	indicated file. For binary mode, type "xbd -b exampleFile.xxx".
 
+	xed <filename>
 	
+	-file name will not include any extensions
+	-filename must contain path to directory that contains <filename>.obj and <filename>.sym
+
+	ex) xed ./test/2_2 
+
+
 Description of novel design decisions
 
-	Instead of reading the entire file at once, then processing everything, the
-	file is read line by line where each line is processed before the next line
-	is read. This saves space in memory and prevents us from possibly overloading
-	the array data structure in the case of extremely large files.
+	1. Instruction struct was exceptionally useful in linking all phases of this project
+		- Instruction struct was designed to completely encapsulate printing a .lis file
+		- The complex job of disassembly was simplified to smaller tasks of simply figuring out how to populate the fields of Instruction structs.
+
+	2. Read and tokenize .obj and .sym file into structs prior to processing
+		- This greatly simplified the process of interpreting these files
 	
+	Full list of design decisions are available in our design document
+
 	
 Description of any extra functionality not required
 
 	No extra features added.
-	
+
 	
 Description of all known deficiencies or bugs
+	
+	Cannot recognize use of EQU directive.
 
-	No known bugs, output looks indistinguishable from xxd command.
+	BYTE and WORD directives.
+		- Works sometimes
 	
-	
+
 Lessons Learned
 
-	-How to process arguments in the command line.
-	-Becoming more comfortable with compiling with Makefiles in the command line.
-	-Utilizing C for making UNIX commands.
+	-Improved knowledge of the C programming language (1st time using this language was with a1).
+	-Maintaining organization and good programming practices on a large project like this is very challenging. The need for a detailed design document was made apparent during this project.
+	-There are some things that a disassembler can't do with certainty (some of which are mentioned above).
+	-Reverse engineering is hard! We felt overwhelmed at certain points of this project.

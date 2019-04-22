@@ -5,10 +5,10 @@
 ###########################################################
 #NEEDS TO BE CHANGED FOR PROJECT 2!
 xed: main.o
-	gcc main.o -o xbd
+	gcc *.o -o xed
 
-main.o: main.c main.h
-	gcc -c main.c
+main.o: *.c *.h
+	gcc -c *.c -lm
 
 clean:
 	rm *.o
