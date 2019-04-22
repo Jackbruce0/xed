@@ -313,7 +313,7 @@ Instruction* Format3(Instruction* instptr,
 	{
 		//addressingmode = "Immediate";
 		instptr->operand[0]='#';
-		sprintf(instptr->operand+1, "%d     ", disp);
+		sprintf(instptr->operand+1, "%d    ", disp);
 	}
 	else
 	{
@@ -393,7 +393,7 @@ Instruction* Format4(Instruction* instptr,
 	{
 		addressingmode = "Immediate";
 		instptr->operand[0]='#';
-		sprintf(instptr->operand+1, "%d     ", address);
+		sprintf(instptr->operand+1, "%d    ", address);
 	}
 	else
 	{
@@ -521,6 +521,54 @@ Instruction* ByteData(Instruction* instptr,
 	strncpy(instptr->operand+5, "'    ",5);
 	return instptr;
 }
+
+/*************************************************************
+ function: InsertSTARTDirective
+ Notes: Puts the START directive at the beginning of the
+		source code.
+ I/O: input paramaters: Head of linked list, program name,
+						and the starting address.
+      output: void
+ *************************************************************/
+link InsertSTARTDirective(link HEAD, char* progname, int LOCCTR)
+{
+    Instruction *START = malloc(sizeof(Instruction));
+    START->format = -1;
+    START->objcode[0] = ' ';
+    START->objcode[1] = ' ';
+	START->objcode[2] = ' ';
+	START->objcode[3] = '\0';
+    START->startadr = LOCCTR;
+	strncpy(START->opname, " START \0", 8);
+	sprintf(START->operand, " %X", LOCCTR);
+    strncpy(START->label, progname, 7);
+    HEAD = Add(HEAD, START);
+    return HEAD;
+} /* End of function Insert_START_Directive */
+
+/*************************************************************
+ function: InsertENDDirective
+ Notes: Puts the END directive at the end of the
+		source code.
+ I/O: input paramaters: Head of linked list & starting
+						address.
+      output: void
+ *************************************************************/
+link InsertENDDirective(link HEAD, int LOCCTR)
+{
+    Instruction *END = malloc(sizeof(Instruction));
+    END->format = -1;
+    END->objcode[0] = ' ';
+    END->objcode[1] = ' ';
+    END->objcode[2] = ' ';
+    END->objcode[3] = '\0';
+	strncpy(END->opname, " END   \0", 8);
+    strncpy(END->label, "      \0", 7);
+	strncpy(END->operand,
+			GetSymbolName(LOCCTR), 7);
+    HEAD = Add(HEAD, END);
+    return HEAD;
+} /* End of function Insert_END_Directive */
 
 /*************************************************************
  function: OpcodeCopy

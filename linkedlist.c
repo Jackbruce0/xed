@@ -119,21 +119,26 @@ void PrintList(link head)
 }
 
 /*************************************************************
- function: PrintSIC
- Notes: Prints out instruction struct contents. This will be
-		the main function for printing out the source code.
- I/O: input paramaters: Head of the linked list.
+ function: WriteFile
+ Notes: Writes out instruction struct contents to either .sic
+	file or .lis file depending on fileflag, where 0=".sic"
+	and 1=".lis".
+ I/O: input paramaters: Head of the linked list, filename,
+						and fileflag.
       output: N/A
  *************************************************************/
 
-void PrintSIC(link head, char *fileName)
+void WriteFile(link head, char *fileName, int fileflag)
 {
 	FILE *fPtr = FileOpen(fileName, "wb");
 	link listptr = head;
 	int j;
 	while(listptr!=NULL)
 	{
-		fprintf(fPtr, "%04X  ", listptr->instptr->startadr);
+		if(fileflag==1)
+		{
+			fprintf(fPtr, "%04X  ", listptr->instptr->startadr);
+		}
 
 		fprintf(fPtr, "%6s ", listptr->instptr->label);
 
@@ -143,58 +148,30 @@ void PrintSIC(link head, char *fileName)
         listptr->instptr->operand[9] = '\0';
 		fprintf(fPtr, "%7s   ", listptr->instptr->operand);
         
-        
-        int format = listptr->instptr->format;
-        int objlen = 0;
-        if(format == 0 || format == 3)
-        {
-            objlen = 3;
-        } else if (format == 4)
-        {
-            objlen = 4;
-        } else if (format == 2)
-        {
-            objlen = 2;
-        } else if (format == 1)
-        {
-            objlen = 1;
-        }
-            
-        for(j = 0; j < objlen; j++)
-        {
-            fprintf(fPtr, "%02X", listptr->instptr->objcode[j]);
-        }
-        
-		fprintf(fPtr, "\n");
-		listptr=listptr->next;
-	}
-    fclose(fPtr);
-	return;
-}
-
-/*************************************************************
- function: PrintLisFile
- Notes: Prints out instruction struct contents. This will be
-		the main function for printing out the source code.
- I/O: input paramaters: Head of the linked list.
-      output: N/A
- *************************************************************/
-
-void PrintLisFile(link head, char *fileName)
-{
-	FILE *fPtr = FileOpen(fileName, "wb");
-	link listptr = head;
-	int j;
-	while(listptr!=NULL)
-	{
-		fprintf(fPtr, "%6s ", listptr->instptr->label);
-
-        fprintf(fPtr, "%7s  ", listptr->instptr->opname);
-        
-        // operand[0] is unitialized often
-        listptr->instptr->operand[9] = '\0';
-		fprintf(fPtr, "%7s   ", listptr->instptr->operand);
-		fprintf(fPtr, "\n");
+        if(fileflag==1)
+		{
+			int format = listptr->instptr->format;
+			int objlen = 0;
+			if(format == 0 || format == 3)
+			{
+				objlen = 3;
+			} else if (format == 4)
+			{
+				objlen = 4;
+			} else if (format == 2)
+			{
+				objlen = 2;
+			} else if (format == 1)
+			{
+				objlen = 1;
+			}
+				
+			for(j = 0; j < objlen; j++)
+			{
+				fprintf(fPtr, "%02X", listptr->instptr->objcode[j]);
+			}
+		}
+        fprintf(fPtr, "\n");
 		listptr=listptr->next;
 	}
     fclose(fPtr);

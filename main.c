@@ -20,7 +20,14 @@
 
 int main(int argc, const char * argv[])
 {
-    char *fname = (char*)argv[1];
+    if(argv[1]==NULL)
+	{
+		printf("Please provide a <filename> that has ");
+		printf("<filename>.obj and <filename>.sym ");
+		printf("files to associate with.\n");
+		exit(1);
+	}
+	char *fname = (char*)argv[1];
     char *objfname = GetFileExt(fname, ".obj"); //fname.obj
     char *symfname = GetFileExt(fname, ".sym"); //fname.sym
 	char *sicfname = GetFileExt(fname, ".sic"); //fname.sic
@@ -69,6 +76,7 @@ int main(int argc, const char * argv[])
     int LOCCTR = 0;
     int nextaddr = 0; /* address of next instruction */
 	link head = NULL;
+	head = InsertSTARTDirective(head, H->name, H->startadr);
 	for(textnx=0; textnx<GetTcount(); textnx++)
 	{
         LOCCTR = T[textnx]->startadr;
@@ -80,6 +88,7 @@ int main(int argc, const char * argv[])
         LOCCTR += T[textnx]->reclength;
         head = InsertRESDirectives(head, LOCCTR, nextaddr);
 	}
+	head = InsertENDDirective(head, H->startadr);
 	/******** END OF STEP 2 *******/
     
     //test//
@@ -106,9 +115,9 @@ int main(int argc, const char * argv[])
            E->firstinst);
 	printf("\nSOURCE CODE DISASSEMBLEMENT PROGRESS\n");
 	PrintList(head);
-	PrintSIC(head, sicfname);
-	PrintLisFile(head, lisfname);
     ///////
+	WriteFile(head, sicfname, 0);
+	WriteFile(head, lisfname, 1);
 	FreeMem(objfname, symfname, H, T, M, E, head);
     return 0;
 }

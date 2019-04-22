@@ -55,8 +55,7 @@ typedef struct node* link;
 link Add(link head, Instruction *inst);
 unsigned int GetLocctr(link head);
 void PrintList(link head);
-void PrintSIC(link head, char *fileName);
-void PrintLisFile(link head, char *fileName);
+void WriteFile(link head, char *fileName, int fileflag);
 void FreeItems(link head);
 void FreeList(link head);
 
@@ -88,6 +87,10 @@ Instruction* Format4(Instruction* instptr,
 Instruction* ByteData(Instruction* instptr,
 				unsigned char curbyte, unsigned int locctr,
 				int i, unsigned char inst[30]);
+				
+link InsertSTARTDirective(link HEAD, char* progname, int LOCCTR);
+
+link InsertENDDirective(link HEAD, int LOCCTR);
 				
 Instruction* OpcodeCopy(unsigned char curbyte, 
 									Instruction* instptr);
