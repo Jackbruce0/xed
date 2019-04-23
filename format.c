@@ -267,7 +267,7 @@ Instruction* Format3(Instruction* instptr,
 	{
 		//addressingmode = "Immediate";
 		instptr->operand[0]='#';
-		sprintf(instptr->operand+1, "%d    ", disp);
+		sprintf(instptr->operand+1, "%d     ", disp);
 	}
 	else
 	{

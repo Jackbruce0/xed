@@ -31,7 +31,7 @@ typedef struct Instruction
     char opname[8]; /* Col 3
                      if (format 4) [0] = '+'
                      else [0] = ' ' */
-    char operand[10]; /* Col 4
+    char operand[11]; /* Col 4
                       if (immediate) [0] = '#'
                       if (indirect) [0] = '@'
                       if (literal) [0] = '='
